@@ -1,0 +1,42 @@
+app: wsl
+requestLimit: 1024
+# apiPrefix: /api
+listen: ":7001"
+
+# cookie track key
+track: jt
+
+
+# redis 配置(pass从env中获取pass这个配置为密码，如果未配置则为空)
+redis: redis://127.0.0.1:6379
+
+# postgres 配置 (pass从env中获取pass这个配置为密码，如果未配置则为空)
+postgres:
+  host: 127.0.0.1
+  port: 5432
+  user: vicanso 
+  dbname: novel 
+  password: PASS
+  sslmode: disable
+
+# session的相关配置
+session:
+  path: /
+  key: wsl
+  ttl: 24h
+
+# key for sign cookie
+keys:
+  - cuttlefish
+  - secret
+
+location:
+  baseURL: https://ip.aslant.site/
+
+# router limit
+routerLimit:
+  # 限制路由访问并发数
+  GET /users/v1/me/login: 50
+
+# 文件目录
+filePath: /Volumes/EXTRA/卫斯理
