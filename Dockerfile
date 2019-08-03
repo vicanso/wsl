@@ -3,6 +3,7 @@ FROM node:12-alpine as webbuilder
 ADD . /wsl
 RUN apk update \
   && apk add git \
+  && git clone --depth=1 https://github.com/vicanso/wsl.git /wsl \
   && cd /wsl/web \
   && yarn \
   && yarn build \
@@ -22,7 +23,7 @@ FROM alpine
 
 EXPOSE 7001
 
-COPY --from=builder /wsl/wsl /usr/local/binwsl/
+COPY --from=builder /wsl/wsl /usr/local/bin/wsl
 
 
 CMD ["wsl"]
