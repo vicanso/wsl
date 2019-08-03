@@ -13,5 +13,10 @@ before_install:
 
 script:
   - env GO111MODULE=on make test
+
+after_success:
   - docker build -t wsl .
+  - docker tag wsl $DOCKER_USERNAME/wsl:latest
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+  - docker push $DOCKER_USERNAME/wsl:latest
   - docker images
