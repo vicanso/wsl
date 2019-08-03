@@ -8,7 +8,7 @@ RUN cd /wsl/web \
 
 FROM golang:1.12-alpine as builder
 
-COPY --from=webbuilder /wsl wsl/
+COPY --from=webbuilder /wsl /wsl
 
 RUN apk update \
   && apk add docker git make \
