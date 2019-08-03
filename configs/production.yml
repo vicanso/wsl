@@ -5,7 +5,7 @@ redis: redis://:REDIS_PASS@172.18.55.233:6379
 postgres:
   host: 172.18.55.233
   user: PG_USER
-  dbname: PG_DB
+  dbname: wsl 
   password: PG_PASS
 # 文件目录
 filePath: /tmp/wsl
