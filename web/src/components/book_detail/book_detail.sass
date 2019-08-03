@@ -1,0 +1,41 @@
+@import "../../variables"
+
+.BookDetail
+  @include MainView;
+
+.BookDetail
+  margin: auto
+  .detail
+    padding: 10px
+    background-color: #fff
+    margin-bottom: 15px
+    $coverWidth: 150px
+    .cover
+      float: left
+      width: $coverWidth
+    .content
+      margin-left: $coverWidth + 10px
+    h3
+      font-size: 16px
+      line-height: 2em
+      margin: 0
+      padding: 0
+  .chapters
+    h5
+      margin: 10px 0
+      padding-left: 10px
+    ul
+      margin: 0
+      padding: 0
+      list-style: none
+      background-color: #f4f4f4
+    li
+      border: 1px solid rgba(221, 221, 221, 0.6)
+      padding: 10px
+      a
+        color: $COLOR_BLACK
+        display: block
+      &:nth-child(odd)
+        background-color: #fff
+
+    

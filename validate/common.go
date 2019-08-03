@@ -33,4 +33,10 @@ func init() {
 		}
 		return govalidator.InRangeInt(value, "0", "1000")
 	})
+	Add("xFields", func(i interface{}, _ interface{}) bool {
+		return checkASCIIStringLength(i, 1, 50)
+	})
+	Add("xSort", func(i interface{}, _ interface{}) bool {
+		return checkASCIIStringLength(i, 1, 50)
+	})
 }

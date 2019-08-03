@@ -14,8 +14,24 @@
 
 package validate
 
+import (
+	"github.com/asaskevich/govalidator"
+)
+
 func init() {
 	Add("xBookKeyword", func(i interface{}, _ interface{}) bool {
 		return checkStringLength(i, 1, 10)
+	})
+
+	Add("xBookHot", func(i interface{}, _ interface{}) bool {
+		value, ok := i.(int)
+		if !ok {
+			return false
+		}
+		return govalidator.InRangeInt(value, 1, 100)
+	})
+
+	Add("xBookSummary", func(i interface{}, _ interface{}) bool {
+		return checkStringLength(i, 1, 500)
 	})
 }

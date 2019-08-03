@@ -203,14 +203,17 @@ func GetPostgresConnectString() string {
 	arr := []string{}
 	for _, key := range keys {
 		value := getPostgresConfig(key)
-		if key == "password" {
-			value = os.Getenv(value)
+		// 密码与用户名支持env中获取
+		if key == "password" || key == "user" {
+			v := os.Getenv(value)
+			if v != "" {
+				value = v
+			}
 		}
 		if value != "" {
 			arr = append(arr, key+"="+value)
 		}
 	}
-
 	return strings.Join(arr, " ")
 }
 

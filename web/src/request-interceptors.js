@@ -8,12 +8,14 @@ request.interceptors.request.use(config => {
 });
 
 request.interceptors.response.use(null, err => {
-  const { response } = err;
-  if (response) {
+  const { response, code } = err;
+  if (code === 'ECONNABORTED') {
+    err.message = "很抱歉，请求超时，请再次重试。"
+  } else if (response) {
     if (response.data && response.data.message) {
       err.message = response.data.message;
     } else {
-      err.message = `unknown error[${response.statusCode || -1}]`;
+      err.message = `未知异常[${response.statusCode || -1}]`;
     }
   }
   return Promise.reject(err);

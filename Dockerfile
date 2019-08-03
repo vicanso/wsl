@@ -1,8 +1,8 @@
 FROM node:12-alpine as webbuilder
 
+ADD . /wsl
 RUN apk update \
   && apk add git \
-  && git clone --depth=1 https://github.com/vicanso/wsl.git /wsl \
   && cd /wsl/web \
   && yarn \
   && yarn build \
@@ -13,7 +13,7 @@ FROM golang:1.12-alpine as builder
 COPY --from=webbuilder /wsl wsl/
 
 RUN apk update \
-  && apk add docker git gcc make \
+  && apk add docker git make \
   && go get -u github.com/gobuffalo/packr/v2/packr2 \
   && cd /wsl \
   && make build

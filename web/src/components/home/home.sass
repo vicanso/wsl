@@ -1,0 +1,47 @@
+@import "../../variables"
+
+.Home
+  @include MainView;
+
+.Home
+  margin: auto
+  .menu
+    margin-bottom: 10px
+  .keyword
+    margin-bottom: 10px
+  .books
+    margin: 0
+    padding: 0
+    list-style: none
+    .book
+      padding: 10px
+      background-color: #fff
+      margin-bottom: 15px
+      $coverWidth: 150px
+      .cover
+        float: left
+        width: $coverWidth
+      .content
+        margin-left: $coverWidth + 10px
+        p
+          color: $COLOR_GRAY
+          line-height: 20px
+          height: 60px
+          overflow: hidden
+      h3
+        font-size: 16px
+        line-height: 2em
+        margin: 0
+        padding: 0
+      .author
+        color: $COLOR_GRAY
+      .tags
+        float: right
+        .tag
+          border: 1px solid #a3b8cc
+          color: #a3b8cc
+          border-radius: 3px
+          padding: 2px 5px
+  .loadMore
+    width: 100%
+    margin-bottom: 15px

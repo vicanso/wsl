@@ -1,1 +1,11 @@
 $APP_MENU_WIDTH: 220px
+$APP_MAIN_WIDTH: 1000px
+
+$COLOR_GRAY: #666
+$COLOR_BLACK: #333
+
+@mixin MainView 
+  @media (min-width: 320px)
+    width: 100%
+  @media (min-width: 1000px) 
+    width: $APP_MAIN_WIDTH

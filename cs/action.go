@@ -28,4 +28,7 @@ const (
 	ActionConfigurationUpdate = "update-configuration"
 	// ActionConfigurationDelete delete configuration
 	ActionConfigurationDelete = "delete-configuration"
+
+	// ActionBookUpdate update book
+	ActionBookUpdate = "update-book"
 )

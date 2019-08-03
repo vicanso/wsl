@@ -13,10 +13,11 @@
     "react-dom": "^16.8.6",
     "react-router": "^5.0.1",
     "react-router-dom": "^5.0.1",
-    "react-scripts": "3.0.1"
+    "react-scripts": "3.0.1",
+    "throttle-debounce": "^2.1.0"
   },
   "scripts": {
-    "format": "node node_modules/.bin/prettier --write src/**/*.js src/**/**/*.js",
+    "format": "node node_modules/.bin/prettier --write src/*.js src/**/*.js src/**/**/*.js",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",

@@ -15,3 +15,13 @@ export function setEndOfDay(date) {
     .seconds(59)
     .milliseconds(999);
 }
+
+export function formatWordCount(value) {
+  if (value < 1000) {
+    return `${value}字`;
+  }
+  if (value < 10000) {
+    return `${Math.floor(value / 1000)}千字`;
+  }
+  return `${Math.floor(value / 10000)}万字`;
+}

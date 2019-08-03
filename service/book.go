@@ -37,10 +37,12 @@ type (
 		UpdatedAt time.Time  `json:"updatedAt,omitempty"`
 		DeletedAt *time.Time `sql:"index" json:"deletedAt,omitempty"`
 
-		Name    string `json:"name,omitempty" gorm:"type:varchar(100);not null;unique_index:name_author;"`
-		Author  string `json:"author,omitempty" gorm:"type:varchar(40);not null;unique_index:name_author;"`
-		Summary string `json:"summary,omitempty" gorm:"type:varchar(500);not null;"`
-		Hot     int    `json:"hot,omitempty"`
+		Name         string `json:"name,omitempty" gorm:"type:varchar(100);not null;unique_index:name_author;"`
+		Author       string `json:"author,omitempty" gorm:"type:varchar(40);not null;unique_index:name_author;"`
+		Summary      string `json:"summary,omitempty" gorm:"type:varchar(500);not null;"`
+		WordCount    int    `json:"wordCount,omitempty"`
+		ChapterCount int    `json:"chapterCount,omitempty"`
+		Hot          int    `json:"hot,omitempty"`
 	}
 	// Chapter chapter
 	Chapter struct {
@@ -49,19 +51,22 @@ type (
 		UpdatedAt time.Time  `json:"updatedAt,omitempty"`
 		DeletedAt *time.Time `sql:"index" json:"deletedAt,omitempty"`
 
-		BookID  uint   `json:"bookID,omitempty" gorm:"not null;unique_index:book_id_no;"`
-		NO      uint   `json:"no,omitempty" gorm:"not null;unique_index:book_id_no;"`
-		Title   string `json:"title,omitempty"`
-		Content string `json:"content,omitempty"`
+		BookID    uint   `json:"bookID,omitempty" gorm:"not null;unique_index:book_id_no;"`
+		NO        uint   `json:"no,omitempty" gorm:"not null;unique_index:book_id_no;"`
+		Title     string `json:"title,omitempty"`
+		Content   string `json:"content,omitempty"`
+		WordCount int    `json:"wordCount,omitempty"`
 	}
 	// BookQueryParams book query params
 	BookQueryParams struct {
+		Sort    string
 		Offset  int
 		Limit   int
 		Keyword string
 	}
 	// ChapterQueryParams chapter query params
 	ChapterQueryParams struct {
+		Fields string
 		BookID uint
 		Offset int
 		Limit  int
@@ -76,7 +81,31 @@ func init() {
 		AutoMigrate(&Chapter{})
 }
 
-func getChapters(path string, book Book) (err error) {
+func updateBookExtraInfo(bookID uint) (err error) {
+	var wordCounts []int
+	err = pgGetClient().Model(&Chapter{}).Where(Chapter{
+		BookID: bookID,
+	}).Pluck("word_count", &wordCounts).Error
+	if err != nil {
+		return
+	}
+	wordCount := 0
+	for _, v := range wordCounts {
+		wordCount += v
+	}
+	err = pgGetClient().Model(&Book{
+		ID: bookID,
+	}).Updates(Book{
+		WordCount:    wordCount,
+		ChapterCount: len(wordCounts),
+	}).Error
+	if err != nil {
+		return
+	}
+	return
+}
+
+func updateChapters(path string, book Book) (err error) {
 	chaptersFile := filepath.Join(path, book.Name, "chapters.json")
 	buf, err := ioutil.ReadFile(chaptersFile)
 	if err != nil {
@@ -96,13 +125,19 @@ func getChapters(path string, book Book) (err error) {
 			return
 		}
 		chapter := Chapter{}
+		content := string(buf)
 
 		err = pgGetClient().Where(Chapter{
-			BookID:  book.ID,
-			NO:      uint(index),
-			Title:   item.Title,
-			Content: string(buf),
+			BookID:    book.ID,
+			NO:        uint(index),
+			Title:     item.Title,
+			Content:   content,
+			WordCount: len(content),
 		}).FirstOrCreate(&chapter).Error
+		if err != nil {
+			return
+		}
+		err = updateBookExtraInfo(book.ID)
 		if err != nil {
 			return
 		}
@@ -135,7 +170,7 @@ func (srv *BookSrv) SyncFromFile(path string) (err error) {
 		if err != nil {
 			return
 		}
-		err = getChapters(path, book)
+		err = updateChapters(path, book)
 		if err != nil {
 			return
 		}
@@ -149,6 +184,14 @@ func newBookQuery(params BookQueryParams) *gorm.DB {
 		db = db.Where("name LIKE ?", "%"+params.Keyword+"%")
 	}
 	return db
+}
+
+// UpdateByID update book by id
+func (srv *BookSrv) UpdateByID(id uint, data interface{}) (err error) {
+	err = pgGetClient().Model(&Book{
+		ID: id,
+	}).Update(data).Error
+	return
 }
 
 // Count count book
@@ -171,6 +214,12 @@ func (srv *BookSrv) List(params BookQueryParams) (result []*Book, err error) {
 	if params.Offset > 0 {
 		db = db.Offset(params.Offset)
 	}
+
+	if params.Sort != "" {
+		db = db.Order(pgFormatSort(params.Sort))
+	}
+
+	db = db.Order("id")
 
 	err = db.Find(&result).Error
 	return
@@ -197,6 +246,12 @@ func (srv *BookSrv) ListChapter(params ChapterQueryParams) (result []*Chapter, e
 	if params.Offset > 0 {
 		db = db.Offset(params.Offset)
 	}
+	db = db.Order("no")
+
+	if params.Fields != "" {
+		db = db.Select(params.Fields)
+	}
+
 	err = db.Find(&result).Error
 	return
 }

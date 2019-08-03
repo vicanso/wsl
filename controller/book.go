@@ -19,6 +19,7 @@ import (
 
 	"github.com/vicanso/cod"
 	"github.com/vicanso/wsl/config"
+	"github.com/vicanso/wsl/cs"
 	"github.com/vicanso/wsl/router"
 	"github.com/vicanso/wsl/service"
 	"github.com/vicanso/wsl/validate"
@@ -29,13 +30,19 @@ type (
 	bookCtrl struct{}
 
 	listBookParmas struct {
+		Sort    string `json:"sort,omitempty" valid:"xSort,optional"`
 		Limit   string `json:"limit,omitempty" valid:"xLimit"`
 		Offset  string `json:"offset,omitempty" valid:"xOffset"`
 		Keyword string `json:"keyword,omitempty" valid:"xBookKeyword,optional"`
 	}
 	listChapterParams struct {
+		Fields string `json:"fields,omitempty" valid:"xFields"`
 		Limit  string `json:"limit,omitempty" valid:"xLimit"`
 		Offset string `json:"offset,omitempty" valid:"xOffset"`
+	}
+	updateBookParams struct {
+		Hot     int    `json:"hot,omitempty" valid:"xBookHot,optional"`
+		Summary string `json:"summary,omitempty" valid:"xBookSummary,optional"`
 	}
 )
 
@@ -47,7 +54,14 @@ func init() {
 
 	g.GET("/v1", ctrl.list)
 	g.GET("/v1/:bookID", ctrl.detail)
+	g.PATCH(
+		"/v1/:bookID",
+		newTracker(cs.ActionBookUpdate),
+		shouldBeAdmin,
+		ctrl.update,
+	)
 	g.GET("/v1/:bookID/chapters", ctrl.listChapter)
+
 }
 
 func (ctrl bookCtrl) syncWsl(c *cod.Context) (err error) {
@@ -79,6 +93,7 @@ func (ctrl bookCtrl) list(c *cod.Context) (err error) {
 		Limit:   limit,
 		Offset:  offset,
 		Keyword: params.Keyword,
+		Sort:    params.Sort,
 	}
 	books, err := bookSrv.List(query)
 	if err != nil {
@@ -126,6 +141,7 @@ func (ctrl bookCtrl) listChapter(c *cod.Context) (err error) {
 	limit, _ := strconv.Atoi(params.Limit)
 	offset, _ := strconv.Atoi(params.Offset)
 	query := service.ChapterQueryParams{
+		Fields: params.Fields,
 		BookID: uint(bookID),
 		Offset: offset,
 		Limit:  limit,
@@ -141,5 +157,24 @@ func (ctrl bookCtrl) listChapter(c *cod.Context) (err error) {
 	}{
 		chapters,
 	}
+	return
+}
+
+func (ctrl bookCtrl) update(c *cod.Context) (err error) {
+	params := &updateBookParams{}
+	err = validate.Do(params, c.RequestBody)
+	if err != nil {
+		return
+	}
+	bookID, _ := strconv.Atoi(c.Param("bookID"))
+	err = bookSrv.UpdateByID(uint(bookID), service.Book{
+		Hot:     params.Hot,
+		Summary: params.Summary,
+	})
+	if err != nil {
+		return
+	}
+
+	c.NoContent()
 	return
 }
