@@ -1,10 +1,7 @@
 FROM node:12-alpine as webbuilder
 
 ADD . /wsl
-RUN apk update \
-  && apk add git \
-  && git clone --depth=1 https://github.com/vicanso/wsl.git /wsl \
-  && cd /wsl/web \
+RUN cd /wsl/web \
   && yarn \
   && yarn build \
   && rm -rf node_module
