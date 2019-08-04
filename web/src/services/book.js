@@ -102,7 +102,7 @@ export async function listRead() {
 }
 
 // setRead 设置书籍阅读信息
-export async function setRead(bookID, chapterIndex) {
+export async function setRead(bookID, chapterIndex, title) {
   const bookList = await listRead();
   let found = -1;
   bookList.forEach((item, index) => {
@@ -115,6 +115,7 @@ export async function setRead(bookID, chapterIndex) {
   }
   bookList.push({
     bookID,
+    title,
     chapterIndex,
     updatedAt: new Date().toISOString()
   });

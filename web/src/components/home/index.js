@@ -99,10 +99,12 @@ class Home extends React.Component {
         <ul className="books">{arr}</ul>
         {!done && (
           <Button
+            type="primary"
             className="loadMore"
             size="large"
             onClick={() => this.loadMore()}
           >
+            <Icon type="appstore" />
             加载更多
           </Button>
         )}

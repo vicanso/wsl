@@ -100,7 +100,7 @@ class ChapterDetail extends React.Component {
         showFunctions: false,
         current
       });
-      bookService.setRead(id, no);
+      bookService.setRead(id, no, current.title);
     } catch (err) {
       message.error(err.message);
       this.setState({

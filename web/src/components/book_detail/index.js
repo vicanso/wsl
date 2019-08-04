@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { BOOK_CHAPTER_PATH, HOME_PATH } from "../../paths";
 import "./book_detail.sass";
 import * as bookService from "../../services/book";
+import { getTimeline } from "../../helpers/util";
 
 class BookDetail extends React.Component {
   state = {
@@ -106,7 +107,7 @@ class BookDetail extends React.Component {
     );
   }
   renderGoOnReading() {
-    const { id, chapters, readInfo } = this.state;
+    const { id, readInfo } = this.state;
     if (!readInfo) {
       return;
     }
@@ -114,17 +115,13 @@ class BookDetail extends React.Component {
       ":no",
       readInfo.chapterIndex
     );
-    let title = null;
-    chapters.forEach(item => {
-      if (item.no === readInfo.chapterIndex) {
-        title = <span> {item.title}</span>;
-      }
-    });
+    const timeLine = getTimeline(readInfo.updatedAt);
     return (
       <Link to={url} className="goOnReading">
         <Icon type="tags" />
         继续阅读
-        {title}
+        <span> {readInfo.title}</span>
+        {timeLine && <span className="timeline">阅读于：{timeLine}</span>}
       </Link>
     );
   }
