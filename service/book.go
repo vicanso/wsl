@@ -43,6 +43,7 @@ type (
 		WordCount    int    `json:"wordCount,omitempty"`
 		ChapterCount int    `json:"chapterCount,omitempty"`
 		Hot          int    `json:"hot,omitempty"`
+		Cover        string `json:"cover,omitempty"`
 	}
 	// Chapter chapter
 	Chapter struct {

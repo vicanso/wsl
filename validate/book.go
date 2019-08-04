@@ -34,4 +34,12 @@ func init() {
 	Add("xBookSummary", func(i interface{}, _ interface{}) bool {
 		return checkStringLength(i, 1, 500)
 	})
+
+	Add("xBookCover", func(i interface{}, _ interface{}) bool {
+		value, ok := i.(string)
+		if !ok {
+			return false
+		}
+		return govalidator.IsRequestURI(value)
+	})
 }

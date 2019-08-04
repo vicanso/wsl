@@ -240,6 +240,22 @@ class BookList extends React.Component {
                 </Form.Item>
               </Col>
               <Col span={24}>
+                <Form.Item label="封面">
+                  <Input
+                    type="text"
+                    defaultValue={current.cover}
+                    placeholder="请输入书籍封面地址"
+                    onChange={e => {
+                      const updateData = this.state.updateData || {};
+                      updateData.cover = e.target.value;
+                      this.setState({
+                        updateData
+                      });
+                    }}
+                  />
+                </Form.Item>
+              </Col>
+              <Col span={24}>
                 <Form.Item label="简介">
                   <TextArea
                     defaultValue={current.summary}

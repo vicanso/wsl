@@ -43,6 +43,7 @@ type (
 	updateBookParams struct {
 		Hot     int    `json:"hot,omitempty" valid:"xBookHot,optional"`
 		Summary string `json:"summary,omitempty" valid:"xBookSummary,optional"`
+		Cover   string `json:"cover,omitempty" valid:"xBookCover,optional"`
 	}
 )
 
@@ -170,6 +171,7 @@ func (ctrl bookCtrl) update(c *cod.Context) (err error) {
 	err = bookSrv.UpdateByID(uint(bookID), service.Book{
 		Hot:     params.Hot,
 		Summary: params.Summary,
+		Cover:   params.Cover,
 	})
 	if err != nil {
 		return

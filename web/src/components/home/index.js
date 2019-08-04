@@ -6,6 +6,7 @@ import { BOOK_DETAIL_PATH } from "../../paths";
 import { formatWordCount } from "../../helpers/util";
 import "./home.sass";
 import * as bookService from "../../services/book";
+import ImageView from "../image_view";
 
 const Search = Input.Search;
 
@@ -76,10 +77,14 @@ class Home extends React.Component {
     }
     const arr = books.map(item => {
       const url = BOOK_DETAIL_PATH.replace(":id", item.id);
+      let cover = null;
+      if (item.cover) {
+        cover = <ImageView url={item.cover} />;
+      }
       return (
         <li className="book" key={`${item.id}`}>
           <Link to={url}>
-            <div className="cover"></div>
+            <div className="cover">{cover}</div>
             <div className="content">
               <h3>{item.name}</h3>
               <p>{item.summary || "暂无简介"}</p>
@@ -98,15 +103,12 @@ class Home extends React.Component {
       <div>
         <ul className="books">{arr}</ul>
         {!done && (
-          <Button
-            type="primary"
-            className="loadMore"
-            size="large"
-            onClick={() => this.loadMore()}
-          >
-            <Icon type="appstore" />
-            加载更多
-          </Button>
+          <div className="loadMore">
+            <Button type="primary" size="large" onClick={() => this.loadMore()}>
+              <Icon type="appstore" />
+              加载更多
+            </Button>
+          </div>
         )}
       </div>
     );
