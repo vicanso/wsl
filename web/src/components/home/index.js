@@ -155,23 +155,24 @@ class Home extends React.Component {
           </Menu.Item>
         </Menu>
         {current === searchKey && (
-          <Search
-            size="large"
-            className="keyword"
-            placeholder="请输入关键字"
-            onSearch={keyword => {
-              this.reset();
-              this.setState(
-                {
-                  keyword
-                },
-                () => {
-                  this.fetchList();
-                }
-              );
-            }}
-            enterButton
-          />
+          <div className="keyword">
+            <Search
+              size="large"
+              placeholder="请输入关键字"
+              onSearch={keyword => {
+                this.reset();
+                this.setState(
+                  {
+                    keyword
+                  },
+                  () => {
+                    this.fetchList();
+                  }
+                );
+              }}
+              enterButton
+            />
+          </div>
         )}
 
         {loading && (

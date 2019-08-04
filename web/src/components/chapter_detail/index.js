@@ -1,6 +1,6 @@
 import React from "react";
 import { Button, Icon, message, Spin, PageHeader, Modal } from "antd";
-import { throttle } from 'throttle-debounce';
+import { throttle } from "throttle-debounce";
 
 import { BOOK_CHAPTER_PATH, BOOK_DETAIL_PATH } from "../../paths";
 import "./chapter_detail.sass";
@@ -41,22 +41,24 @@ class ChapterDetail extends React.Component {
   componentWillMount() {
     this.fetchChapterContent();
     this.fetchDetail();
-    window.addEventListener("scroll", throttle(1000, () => {
-      const {
-        state,
-        contentRef,
-      } = this;
-      if (state.showFunctions || !contentRef.current) {
-        return;
-      }
-      const scrollTop = window.document.documentElement.scrollTop || window.document.body.scrollTop;
-      const height = this.contentRef.current.clientHeight;
-      if (scrollTop + window.innerHeight > height - 80) {
-        this.setState({
-          showFunctions: true,
-        });
-      }
-    }));
+    window.addEventListener(
+      "scroll",
+      throttle(1000, () => {
+        const { state, contentRef } = this;
+        if (state.showFunctions || !contentRef.current) {
+          return;
+        }
+        const scrollTop =
+          window.document.documentElement.scrollTop ||
+          window.document.body.scrollTop;
+        const height = this.contentRef.current.clientHeight;
+        if (scrollTop + window.innerHeight > height - 80) {
+          this.setState({
+            showFunctions: true
+          });
+        }
+      })
+    );
   }
   componentWillReceiveProps(newProps) {
     const { no } = newProps.match.params;

@@ -15,6 +15,9 @@ export async function listChapters(id, params) {
   const { data } = await axios.get(url, {
     params
   });
+  if (!data.books) {
+    data.books = [];
+  }
   return data;
 }
 

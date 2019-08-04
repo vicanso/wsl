@@ -9,8 +9,8 @@ request.interceptors.request.use(config => {
 
 request.interceptors.response.use(null, err => {
   const { response, code } = err;
-  if (code === 'ECONNABORTED') {
-    err.message = "很抱歉，请求超时，请再次重试。"
+  if (code === "ECONNABORTED") {
+    err.message = "很抱歉，请求超时，请再次重试。";
   } else if (response) {
     if (response.data && response.data.message) {
       err.message = response.data.message;

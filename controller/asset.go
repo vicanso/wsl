@@ -60,6 +60,7 @@ func init() {
 	g := router.NewGroup("")
 	ctrl := assetCtrl{}
 	g.GET("/", ctrl.index)
+	g.GET("/admin", ctrl.index)
 	g.GET("/favicon.ico", ctrl.favIcon)
 
 	sf := &staticFile{
