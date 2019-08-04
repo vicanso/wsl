@@ -66,4 +66,13 @@ func Init(d *cod.Cod) {
 		return nil
 	})
 
+	// 书籍章节NO
+	bookNOReg := regexp.MustCompile(`^[0-9]{1,2}$`)
+	d.AddValidator("bookChapterNO", func(value string) error {
+		if !bookNOReg.MatchString(value) {
+			return hes.New("book chapter no should be numbers")
+		}
+		return nil
+	})
+
 }

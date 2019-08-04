@@ -60,6 +60,7 @@ type (
 	}
 	// BookQueryParams book query params
 	BookQueryParams struct {
+		Fields  string
 		Sort    string
 		Offset  int
 		Limit   int
@@ -218,6 +219,10 @@ func (srv *BookSrv) List(params BookQueryParams) (result []*Book, err error) {
 
 	if params.Sort != "" {
 		db = db.Order(pgFormatSort(params.Sort))
+	}
+
+	if params.Fields != "" {
+		db = db.Select(params.Fields)
 	}
 
 	db = db.Order("id")
