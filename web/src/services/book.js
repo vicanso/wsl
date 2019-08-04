@@ -61,8 +61,10 @@ function getChapterContentFromCache(bookID, chapterIndex) {
       found = item;
     }
   });
-  // 如果出现多个空白字段，替换（一般为错误）
-  found.content = found.content.replace(/\s{2,}/g, "");
+  if (found) {
+    // 如果出现多个空白字段，替换（一般为错误）
+    found.content = found.content.replace(/\s{2,}/g, "");
+  }
   return found;
 }
 
