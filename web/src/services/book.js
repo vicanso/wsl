@@ -102,21 +102,23 @@ export async function listRead() {
 // setRead 设置书籍阅读信息
 export async function setRead(bookID, chapterIndex) {
   const bookList = await listRead();
-  let found = null;
-  bookList.forEach(item => {
+  let found = -1;
+  bookList.forEach((item, index) => {
     if (item.bookID === bookID) {
-      found = item;
+      found = index;
     }
   });
-  if (found) {
-    found.chapterIndex = chapterIndex;
-    found.updatedAt = new Date().toISOString();
-  } else {
-    bookList.push({
-      bookID,
-      chapterIndex,
-      updatedAt: new Date().toISOString()
-    });
+  if (found !== -1) {
+    bookList.splice(found, 1);
+  }
+  bookList.push({
+    bookID,
+    chapterIndex,
+    updatedAt: new Date().toISOString()
+  });
+  // 最多只保存20个记录
+  if (bookList.length > 20) {
+    bookList.shift();
   }
   await localforage.setItem(readBookKey, JSON.stringify(bookList));
 }
