@@ -1,5 +1,5 @@
 import React from "react";
-import { Spin, message, PageHeader } from "antd";
+import { Spin, message, PageHeader, Icon } from "antd";
 import { Link } from "react-router-dom";
 
 import { BOOK_CHAPTER_PATH, HOME_PATH } from "../../paths";
@@ -11,13 +11,14 @@ class BookDetail extends React.Component {
     id: "",
     loading: false,
     detail: null,
+    readInfo: null,
     chapters: []
   };
   constructor(props) {
     super(props);
     const { params } = props.match;
     const { id } = params;
-    this.state.id = id;
+    this.state.id = Number.parseInt(id);
   }
   async fetchDetail() {
     const { id } = this.state;
@@ -58,7 +59,12 @@ class BookDetail extends React.Component {
       message.error(err.message);
     }
   }
-  componentWillMount() {
+  async componentWillMount() {
+    const { id } = this.state;
+    const readInfo = await bookService.getRead(id);
+    this.setState({
+      readInfo
+    });
     this.fetchDetail();
     this.loadChapters(0);
   }
@@ -99,6 +105,29 @@ class BookDetail extends React.Component {
       </div>
     );
   }
+  renderGoOnReading() {
+    const { id, chapters, readInfo } = this.state;
+    if (!readInfo) {
+      return;
+    }
+    const url = BOOK_CHAPTER_PATH.replace(":id", id).replace(
+      ":no",
+      readInfo.chapterIndex
+    );
+    let title = null;
+    chapters.forEach(item => {
+      if (item.no === readInfo.chapterIndex) {
+        title = <span> {item.title}</span>;
+      }
+    });
+    return (
+      <Link to={url} className="goOnReading">
+        <Icon type="tags" />
+        继续阅读
+        {title}
+      </Link>
+    );
+  }
   render() {
     const { history } = this.props;
     const { loading, detail } = this.state;
@@ -115,6 +144,7 @@ class BookDetail extends React.Component {
           </div>
         )}
         {this.renderDetail()}
+        {this.renderGoOnReading()}
         {this.renderChapters()}
       </div>
     );

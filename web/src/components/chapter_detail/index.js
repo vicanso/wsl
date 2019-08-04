@@ -11,11 +11,10 @@ const ButtonGroup = Button.Group;
 class ChapterDetail extends React.Component {
   state = {
     name: "",
-    chapters: [],
     showReloadDialog: false,
     showFunctions: false,
     loading: false,
-    id: "",
+    id: 0,
     chapterCount: 0,
     no: 0
   };
@@ -23,7 +22,7 @@ class ChapterDetail extends React.Component {
   constructor(props) {
     super(props);
     const { id, no } = props.match.params;
-    this.state.id = id;
+    this.state.id = Number.parseInt(id);
     this.state.no = Number.parseInt(no);
   }
   async fetchDetail() {
@@ -74,7 +73,7 @@ class ChapterDetail extends React.Component {
     }
   }
   async fetchChapterContent() {
-    const { id, no, loading, chapters } = this.state;
+    const { id, no, loading } = this.state;
     if (loading) {
       return;
     }
@@ -83,7 +82,6 @@ class ChapterDetail extends React.Component {
       loading: true
     });
     try {
-      let found = null;
       let startdAt = Date.now();
       const delay = () => {
         const ms = 300 - (Date.now() - startdAt);
@@ -92,44 +90,17 @@ class ChapterDetail extends React.Component {
         }
         return new Promise(resolve => setTimeout(resolve, ms));
       };
-      chapters.forEach(item => {
-        if (item.no === no) {
-          found = item;
 
-          return;
-        }
-      });
-      if (found) {
-        await delay();
-        this.setState({
-          showFunctions: false,
-          current: found
-        });
-        return;
+      const current = await bookService.getChapterContent(id, no);
+      if (!current) {
+        throw new Error("获取章节内容失败");
       }
-
-      const limit = 5;
-      const offset = Math.floor(no / limit) * limit;
-      const data = await bookService.listChapters(id, {
-        offset,
-        limit,
-        fields: "no,title,content"
-      });
-      let current = null;
-      data.chapters.forEach(item => {
-        if (!item.no) {
-          item.no = 0;
-        }
-        if (item.no === no) {
-          current = item;
-        }
-      });
       await delay();
       this.setState({
         showFunctions: false,
-        chapters: data.chapters,
         current
       });
+      bookService.setRead(id, no);
     } catch (err) {
       message.error(err.message);
       this.setState({
@@ -222,6 +193,7 @@ class ChapterDetail extends React.Component {
     );
   }
   render() {
+    const { history } = this.props;
     const { loading, showReloadDialog } = this.state;
     return (
       <div className="ChapterDetail">
@@ -236,7 +208,7 @@ class ChapterDetail extends React.Component {
           title="加载失败啦~"
           visible={showReloadDialog}
           okText={"确定"}
-          cancelText={"取消"}
+          cancelText={"返回"}
           onOk={() => {
             this.fetchChapterContent();
             this.setState({
@@ -247,6 +219,7 @@ class ChapterDetail extends React.Component {
             this.setState({
               showReloadDialog: false
             });
+            history.goBack();
           }}
         >
           <p>加载失败，是否重新加载？</p>

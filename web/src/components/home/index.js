@@ -143,7 +143,7 @@ class Home extends React.Component {
         >
           <Menu.Item key={homeKey}>
             <Icon type="book" />
-            卫斯理全集
+            全集
           </Menu.Item>
           <Menu.Item key={hotKey}>
             <Icon type="fire" />
