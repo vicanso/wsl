@@ -1,5 +1,9 @@
 import moment from "moment";
 
+import { sha256 } from "./crypto";
+
+const hash = "JT";
+
 export function setBeginOfDay(date) {
   return date
     .clone()
@@ -53,4 +57,8 @@ export function getTimeline(date) {
     return "昨天";
   }
   return v.format("YYYY-MM-DD");
+}
+
+export function generatePassword(pass) {
+  return sha256(pass + hash);
 }
