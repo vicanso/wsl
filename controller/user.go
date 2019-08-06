@@ -19,8 +19,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/vicanso/wsl/validate"
 	"github.com/vicanso/hes"
+	"github.com/vicanso/wsl/validate"
 
 	"github.com/vicanso/cod"
 	"github.com/vicanso/wsl/config"
@@ -175,13 +175,20 @@ func (ctrl userCtrl) me(c *cod.Context) (err error) {
 	cookie, _ := c.Cookie(key)
 	// ulid的长度为26
 	if cookie == nil || len(cookie.Value) != 26 {
+		uid := util.GenUlid()
 		c.AddCookie(&http.Cookie{
 			Name:     key,
-			Value:    util.GenUlid(),
+			Value:    uid,
 			Path:     "/",
 			HttpOnly: true,
 			MaxAge:   365 * 24 * 3600,
 		})
+		trackRecord := &service.UserTrackRecord{
+			UserAgent: c.GetRequestHeader("User-Agent"),
+			IP:        c.RealIP(),
+			TrackID:   util.GetTrackID(c),
+		}
+		userSrv.AddTrackRecord(trackRecord)
 	}
 	c.Body = pickUserInfo(c)
 	return
