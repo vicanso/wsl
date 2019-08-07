@@ -6,6 +6,7 @@ import { BOOK_CHAPTER_PATH, HOME_PATH } from "../../paths";
 import "./book_detail.sass";
 import * as bookService from "../../services/book";
 import { getTimeline } from "../../helpers/util";
+import ImageView from "../image_view";
 
 class BookDetail extends React.Component {
   state = {
@@ -74,12 +75,22 @@ class BookDetail extends React.Component {
     if (!detail) {
       return;
     }
+    let cover = null;
+    if (detail.cover) {
+      cover = <ImageView url={detail.cover} />;
+    }
+    const arr = [];
+    if (detail.summary) {
+      detail.summary.split("\n").forEach((item, index) => {
+        arr.push(<p key={`summary-${index}`}>{item}</p>);
+      });
+    } else {
+      arr.push(<p key="noSummary">暂无简介</p>);
+    }
     return (
       <div className="detail">
-        <div className="cover"></div>
-        <div className="content">
-          <p>{detail.summary || "暂无简介"}</p>
-        </div>
+        <div className="cover">{cover}</div>
+        <div className="content">{arr}</div>
       </div>
     );
   }
