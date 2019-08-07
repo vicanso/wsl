@@ -1,9 +1,9 @@
 # production 生产环境中使用的相关配置
 
-redis: redis://:REDIS_PASS@172.17.0.1:6379
+redis: redis://:REDIS_PASS@172.31.47.119:6379
 # postgres 配置 (pass从env中获取pass这个配置为密码，如果未配置则为空)
 postgres:
-  host: 172.17.0.1
+  host: 172.31.47.119
   user: PG_USER
   dbname: wsl 
   password: PG_PASS
