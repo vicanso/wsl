@@ -32,7 +32,7 @@ func init() {
 	})
 
 	Add("xBookSummary", func(i interface{}, _ interface{}) bool {
-		return checkStringLength(i, 1, 500)
+		return checkStringLength(i, 1, 2000)
 	})
 
 	Add("xBookCover", func(i interface{}, _ interface{}) bool {
