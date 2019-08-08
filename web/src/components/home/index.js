@@ -1,5 +1,5 @@
 import React from "react";
-import { Spin, message, Button, Input, Menu, Icon } from "antd";
+import { Spin, message, Input, Menu, Icon } from "antd";
 import { Link } from "react-router-dom";
 
 import { BOOK_DETAIL_PATH } from "../../paths";
@@ -7,6 +7,7 @@ import { formatWordCount } from "../../helpers/util";
 import "./home.sass";
 import * as bookService from "../../services/book";
 import ImageView from "../image_view";
+import "intersection-observer";
 
 const Search = Input.Search;
 
@@ -22,10 +23,12 @@ class Home extends React.Component {
     books: [],
     done: false,
     loading: false,
+    inited: false,
     count: 0,
     limit: 10,
     offset: 0
   };
+  loadMoreRef = React.createRef();
   async fetchList(newOffset = 0) {
     const { loading, limit, count, keyword, sort } = this.state;
     if (loading) {
@@ -59,19 +62,32 @@ class Home extends React.Component {
       message.error(err.message);
     } finally {
       this.setState({
+        inited: true,
         loading: false
       });
     }
   }
   componentDidMount() {
     this.fetchList();
+    const io = new IntersectionObserver(() => {
+      if (this.state.loading) {
+        return;
+      }
+      this.loadMore();
+    });
+    io.POLL_INTERVAL = 300; // Time in milliseconds.
+    io.observe(this.loadMoreRef.current);
+    this.loadMoreIO = io;
+  }
+  componentWillUnmount() {
+    this.loadMoreIO.disconnect();
   }
   loadMore() {
     const { offset, limit } = this.state;
     this.fetchList(offset + limit);
   }
   renderList() {
-    const { books, done } = this.state;
+    const { books } = this.state;
     if (books.length === 0) {
       return;
     }
@@ -102,14 +118,6 @@ class Home extends React.Component {
     return (
       <div>
         <ul className="books">{arr}</ul>
-        {!done && (
-          <div className="loadMore">
-            <Button type="primary" size="large" onClick={() => this.loadMore()}>
-              <Icon type="appstore" />
-              加载更多
-            </Button>
-          </div>
-        )}
       </div>
     );
   }
@@ -122,7 +130,7 @@ class Home extends React.Component {
     });
   }
   render() {
-    const { loading, current } = this.state;
+    const { current, inited, done } = this.state;
     return (
       <div className="Home">
         <Menu
@@ -179,12 +187,22 @@ class Home extends React.Component {
           </div>
         )}
 
-        {loading && (
+        {!inited && (
           <div className="loadingWrapper">
             <Spin tip={"加载中"} />
           </div>
         )}
         {this.renderList()}
+        {!done && (
+          <div className="loadMore" ref={this.loadMoreRef}>
+            {!done && (
+              <div>
+                <Icon type="appstore" />
+                正在加载更多...
+              </div>
+            )}
+          </div>
+        )}
       </div>
     );
   }

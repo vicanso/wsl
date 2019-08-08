@@ -26,8 +26,10 @@ require (
 	github.com/vicanso/cod-stats v0.0.3
 	github.com/vicanso/cod-tracker v0.0.3
 	github.com/vicanso/count-warner v0.0.1
+	github.com/vicanso/forest v0.0.0-20190806114134-e411bae4f543 // indirect
 	github.com/vicanso/go-axios v0.0.3
 	github.com/vicanso/hes v0.2.1
 	github.com/vicanso/ips v0.0.1
 	go.uber.org/zap v1.10.0
+	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df
 )

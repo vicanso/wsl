@@ -40,3 +40,14 @@ routerLimit:
 
 # 文件目录
 filePath: /Volumes/EXTRA/卫斯理
+
+# mail相关配置
+mail:
+  host: smtp.office365.com
+  port: 587
+  user: emailAddress
+  password: emailPassword
+
+alarm:
+  receiver:
+  - receiverAddress

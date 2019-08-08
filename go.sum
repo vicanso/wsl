@@ -224,6 +224,8 @@ github.com/vicanso/cod-tracker v0.0.3 h1:DFn5bBS1zjK+iiwUkMTOqkQNFxJ8GRmx0yJv1Id
 github.com/vicanso/cod-tracker v0.0.3/go.mod h1:0VjXgb3+g9c/twjp4C9hsXJRVlYFKb3ewNBf9FVbuC8=
 github.com/vicanso/count-warner v0.0.1 h1:itCaY7mVysYs1/YLM4TqdabHhjml1zzVLRJRv5xBqbY=
 github.com/vicanso/count-warner v0.0.1/go.mod h1:35XlM2z/a4y0AFB4ezFz6tUTqc3XZPF9tovxBzpFq0A=
+github.com/vicanso/forest v0.0.0-20190806114134-e411bae4f543 h1:hTnvVqm33eSBsSqm8WA9N5sFQPq1w6GPzxLpOeoFgeQ=
+github.com/vicanso/forest v0.0.0-20190806114134-e411bae4f543/go.mod h1:+oP6AUhIHo/q1brz16k7xjv77uAEpkKrv3qxbdl0s6s=
 github.com/vicanso/fresh v0.1.1 h1:L3UX/g2uZ4pNFzjc7+PyeYOlIAs2/yUfhcFnK7E+JQU=
 github.com/vicanso/fresh v0.1.1/go.mod h1:gr1RKSFxQ1OnQHzUMBHCigifni7KrXveJjWCTlPjICA=
 github.com/vicanso/go-axios v0.0.3 h1:px4qTLYJXCruescfNkLIEpjaYE5ZZ3Wc8Ej8498dR78=
@@ -314,6 +316,8 @@ gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405/go.mod h1:Co6ibVJAznAaIkqp8
 gopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0=
 gopkg.in/errgo.v2 v2.1.0/go.mod h1:hNsd1EY+bozCKY1Ytp96fpM3vjJbqLJn88ws8XvfDNI=
 gopkg.in/fsnotify.v1 v1.4.7/go.mod h1:Tz8NjZHkW78fSQdbUxIjBTcgA1z1m8ZHf0WmKUhAMys=
+gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df h1:n7WqCuqOuCbNr617RXOY0AWRXxgwEyPp2z+p0+hgMuE=
+gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df/go.mod h1:LRQQ+SO6ZHR7tOkpBDuZnXENFzX8qRjMDMyPD6BRkCw=
 gopkg.in/h2non/gock.v1 v1.0.14/go.mod h1:sX4zAkdYX1TRGJ2JY156cFspQn4yRWn6p9EMdODlynE=
 gopkg.in/resty.v1 v1.12.0/go.mod h1:mDo4pnntr5jdWRML875a/NmxYqAlA73dVijT2AXvQQo=
 gopkg.in/tomb.v1 v1.0.0-20141024135613-dd632973f1e7/go.mod h1:dt/ZhP58zS4L8KSrWDmTeBkI65Dw0HsyUHuEVlX15mw=
