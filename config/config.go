@@ -258,6 +258,6 @@ func GetMailConfig() MailConfig {
 		Host:     viper.GetString("mail.host"),
 		Port:     viper.GetInt("mail.port"),
 		User:     viper.GetString("mail.user"),
-		Password: viper.GetString("mail.password"),
+		Password: os.Getenv(viper.GetString("mail.password")),
 	}
 }

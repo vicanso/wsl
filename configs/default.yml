@@ -10,7 +10,7 @@ track: jt
 # redis 配置(pass从env中获取pass这个配置为密码，如果未配置则为空)
 redis: redis://127.0.0.1:6379
 
-# postgres 配置 (pass从env中获取pass这个配置为密码，如果未配置则为空)
+# postgres 配置 (password从env中获取pass这个配置为密码，如果未配置则为空)
 postgres:
   host: 127.0.0.1
   port: 5432
@@ -41,13 +41,14 @@ routerLimit:
 # 文件目录
 filePath: /Volumes/EXTRA/卫斯理
 
-# mail相关配置
+# mail相关配置(password从env中获取pass这个配置为密码
 mail:
   host: smtp.office365.com
   port: 587
-  user: emailAddress
-  password: emailPassword
+  user: tree.xie@outlook.com
+  password: EMAIL_PASS
 
+# 告警接收邮件列表
 alarm:
   receiver:
-  - receiverAddress
+  - tree.xie@outlook.com
