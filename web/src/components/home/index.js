@@ -42,6 +42,14 @@ function getKeyword(location) {
   return query.keyword || "";
 }
 
+function getSort(location) {
+  const query = parseQuery(location);
+  if (!query) {
+    return "";
+  }
+  return query.sort || "";
+}
+
 class Home extends React.Component {
   state = {
     category: "",
@@ -61,6 +69,7 @@ class Home extends React.Component {
     const { location } = props;
     this.state.category = getCategory(location);
     this.state.offset = getOffset(location);
+    this.state.sort = getSort(location);
   }
   async fetchList(props) {
     const {
@@ -138,6 +147,7 @@ class Home extends React.Component {
     const offset = getOffset(location);
     const keyword = getKeyword(location);
     const data = {
+      sort: getSort(location),
       category,
       offset,
       keyword
@@ -240,13 +250,15 @@ class Home extends React.Component {
           selectedKeys={[category]}
           onClick={e => {
             const { key } = e;
+            const data = {
+              category: key,
+              sort: ""
+            };
+            if (key === hotKey) {
+              data.sort = "-hot";
+            }
             this.reset(() => {
-              this.goTo(
-                {
-                  category: key
-                },
-                true
-              );
+              this.goTo(data, true);
             });
           }}
         >
