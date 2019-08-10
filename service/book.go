@@ -270,3 +270,20 @@ func (srv *BookSrv) GetByID(id uint) (book *Book, err error) {
 	err = pgGetClient().First(book).Error
 	return
 }
+
+// UpdateHot update the hot value of book
+func (srv *BookSrv) UpdateHot() (err error) {
+	result := make([]*Book, 0)
+	err = pgGetClient().Find(&result).Error
+	for _, book := range result {
+		if book.Hot == 0 && book.Summary != "" {
+			err = srv.UpdateByID(book.ID, Book{
+				Hot: 1,
+			})
+			if err != nil {
+				return
+			}
+		}
+	}
+	return
+}

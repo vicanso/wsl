@@ -26,6 +26,7 @@ import (
 func init() {
 	go initRedisCheckTicker()
 	go initConfigurationRefreshTicker()
+	go initBookUpdateHotTicker()
 	// go initInfluxdbCheckTicker()
 	// go initRouterConfigRefreshTicker()
 }
@@ -69,4 +70,13 @@ func initConfigurationRefreshTicker() {
 		err := configSrv.Refresh()
 		return err
 	}, initConfigurationRefreshTicker)
+}
+
+func initBookUpdateHotTicker() {
+	// 每30分钟更新一次
+	bookSrv := new(service.BookSrv)
+	ticker := time.NewTicker(30 * time.Minute)
+	runTicker(ticker, "book hot value update", func() error {
+		return bookSrv.UpdateHot()
+	}, initBookUpdateHotTicker)
 }
