@@ -127,7 +127,11 @@ class ChapterDetail extends React.Component {
     return (
       <div
         className="functions"
-        onClick={() => {
+        onClick={e => {
+          // 只点击functions空白处切换
+          if (e.target.className !== "functions") {
+            return;
+          }
           this.setState({
             showFunctions: false
           });

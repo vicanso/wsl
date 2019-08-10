@@ -2,7 +2,7 @@ import React from "react";
 import { Spin, message, Input, Menu, Icon } from "antd";
 import { Link } from "react-router-dom";
 
-import { BOOK_DETAIL_PATH } from "../../paths";
+import { BOOK_DETAIL_PATH, HOME_PATH } from "../../paths";
 import { formatWordCount } from "../../helpers/util";
 import "./home.sass";
 import * as bookService from "../../services/book";
@@ -14,6 +14,22 @@ const Search = Input.Search;
 const homeKey = "home";
 const hotKey = "hot";
 const searchKey = "search";
+
+function getOffset(location) {
+  if (!location || !location.search) {
+    return 0;
+  }
+  const reg = /offset=(\d+)/;
+  const result = reg.exec(location.search);
+  if (!result || !result[1]) {
+    return 0;
+  }
+  const value = Number.parseInt(result[1]);
+  if (Number.isNaN(value)) {
+    return 0;
+  }
+  return value;
+}
 
 class Home extends React.Component {
   state = {
@@ -29,6 +45,10 @@ class Home extends React.Component {
     offset: 0
   };
   loadMoreRef = React.createRef();
+  constructor(props) {
+    super(props);
+    this.state.offset = getOffset(props.location);
+  }
   async fetchList(newOffset = 0) {
     const { loading, limit, count, keyword, sort } = this.state;
     if (loading) {
@@ -67,24 +87,35 @@ class Home extends React.Component {
       });
     }
   }
-  componentDidMount() {
-    this.fetchList();
-    const io = new IntersectionObserver(() => {
-      if (this.state.loading) {
-        return;
-      }
-      this.loadMore();
-    });
-    io.POLL_INTERVAL = 300; // Time in milliseconds.
-    io.observe(this.loadMoreRef.current);
-    this.loadMoreIO = io;
+  async componentDidMount() {
+    try {
+      await this.fetchList(this.state.offset);
+    } finally {
+      const io = new IntersectionObserver(([e]) => {
+        if (!e.isIntersecting) {
+          return;
+        }
+        this.loadMore();
+      });
+      io.POLL_INTERVAL = 300; // Time in milliseconds.
+      io.observe(this.loadMoreRef.current);
+      this.loadMoreIO = io;
+    }
   }
   componentWillUnmount() {
     this.loadMoreIO.disconnect();
   }
+  componentWillReceiveProps(newProps) {
+    if (newProps.location.search === this.props.location.search) {
+      return;
+    }
+    const offset = getOffset(newProps.location);
+    this.fetchList(offset);
+  }
   loadMore() {
+    const { history } = this.props;
     const { offset, limit } = this.state;
-    this.fetchList(offset + limit);
+    history.push(`${HOME_PATH}?offset=${offset + limit}`);
   }
   renderList() {
     const { books } = this.state;
@@ -193,7 +224,7 @@ class Home extends React.Component {
           </div>
         )}
         {this.renderList()}
-        {!done && (
+        {
           <div className="loadMore" ref={this.loadMoreRef}>
             {!done && (
               <div>
@@ -202,7 +233,7 @@ class Home extends React.Component {
               </div>
             )}
           </div>
-        )}
+        }
       </div>
     );
   }
