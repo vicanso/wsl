@@ -231,7 +231,7 @@ class Home extends React.Component {
     );
   }
   render() {
-    const { inited, done, category } = this.state;
+    const { inited, category } = this.state;
     return (
       <div className="Home">
         <Menu
@@ -248,20 +248,6 @@ class Home extends React.Component {
                 true
               );
             });
-
-            // const data = {
-            //   current: key
-            // };
-            // if (key === hotKey) {
-            //   data.sort = "-hot";
-            // }
-            // this.reset();
-            // this.setState(data, () => {
-            //   history.push(`${HOME_PATH}?offset=${offset + limit}`);
-            //   if (key !== searchKey) {
-            //     this.fetchList();
-            //   }
-            // });
           }}
         >
           <Menu.Item key={homeKey}>

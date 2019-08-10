@@ -37,7 +37,7 @@ class BookList extends React.Component {
     this.search();
   }
   async search() {
-    const { loading, pagination } = this.state;
+    const { loading, pagination, keyword } = this.state;
     if (loading) {
       return;
     }
@@ -47,6 +47,7 @@ class BookList extends React.Component {
     try {
       const offset = (pagination.current - 1) * pagination.pageSize;
       const data = await bookService.list({
+        keyword: keyword || "",
         limit: pagination.pageSize,
         offset
       });
@@ -101,7 +102,7 @@ class BookList extends React.Component {
     }
   }
   renderTable() {
-    const { books, pagination, mode } = this.state;
+    const { books, pagination, mode, loading } = this.state;
     if (mode === updateMode) {
       return;
     }
@@ -153,27 +154,29 @@ class BookList extends React.Component {
       }
     ];
     return (
-      <Table
-        rowKey={"id"}
-        className="books"
-        dataSource={books}
-        columns={columns}
-        pagination={pagination}
-        onChange={pagination => {
-          this.setState(
-            {
-              pagination: { ...pagination }
-            },
-            () => {
-              this.search();
-            }
-          );
-        }}
-      />
+      <Spin spinning={loading}>
+        <Table
+          rowKey={"id"}
+          className="books"
+          dataSource={books}
+          columns={columns}
+          pagination={pagination}
+          onChange={pagination => {
+            this.setState(
+              {
+                pagination: { ...pagination }
+              },
+              () => {
+                this.search();
+              }
+            );
+          }}
+        />
+      </Spin>
     );
   }
   renderFiltes() {
-    const { mode } = this.state;
+    const { mode, pagination } = this.state;
     if (mode === updateMode) {
       return;
     }
@@ -184,10 +187,23 @@ class BookList extends React.Component {
             className="keyword"
             placeholder="请输入关键字"
             onSearch={keyword => {
-              this.setState({
-                keyword
-              });
-              this.search();
+              this.setState(
+                {
+                  keyword,
+                  pagination: Object.assign(
+                    {
+                      ...pagination
+                    },
+                    {
+                      current: 1,
+                      total: 0
+                    }
+                  )
+                },
+                () => {
+                  this.search();
+                }
+              );
             }}
             enterButton
           />
