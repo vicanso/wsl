@@ -137,12 +137,12 @@ class BookDetail extends React.Component {
     );
   }
   render() {
-    const { history } = this.props;
+    const { history, location } = this.props;
     const { loading, detail } = this.state;
     return (
       <div className="BookDetail">
         <PageHeader
-          onBack={() => history.push(HOME_PATH)}
+          onBack={() => history.push(`${HOME_PATH}${location.search}`)}
           title={detail && detail.name}
           subTitle={detail && detail.author}
         />

@@ -1,9 +1,10 @@
 import React from "react";
 import { Spin, message, Input, Menu, Icon } from "antd";
 import { Link } from "react-router-dom";
+import qs from "querystring";
 
 import { BOOK_DETAIL_PATH, HOME_PATH } from "../../paths";
-import { formatWordCount } from "../../helpers/util";
+import { formatWordCount, parseQuery } from "../../helpers/util";
 import "./home.sass";
 import * as bookService from "../../services/book";
 import ImageView from "../image_view";
@@ -16,24 +17,34 @@ const hotKey = "hot";
 const searchKey = "search";
 
 function getOffset(location) {
-  if (!location || !location.search) {
-    return 0;
+  const query = parseQuery(location);
+  const v = Number.parseInt(query && query.offset);
+  let offset = 0;
+  if (!Number.isNaN(v)) {
+    offset = v;
   }
-  const reg = /offset=(\d+)/;
-  const result = reg.exec(location.search);
-  if (!result || !result[1]) {
-    return 0;
+  return offset;
+}
+
+function getCategory(location) {
+  const query = parseQuery(location);
+  if (!query) {
+    return homeKey;
   }
-  const value = Number.parseInt(result[1]);
-  if (Number.isNaN(value)) {
-    return 0;
+  return query.category || homeKey;
+}
+
+function getKeyword(location) {
+  const query = parseQuery(location);
+  if (!query) {
+    return "";
   }
-  return value;
+  return query.keyword || "";
 }
 
 class Home extends React.Component {
   state = {
-    current: "home",
+    category: "",
     keyword: "",
     sort: "",
     books: [],
@@ -41,17 +52,31 @@ class Home extends React.Component {
     loading: false,
     inited: false,
     count: 0,
-    limit: 10,
-    offset: 0
+    offset: 0,
+    limit: 10
   };
   loadMoreRef = React.createRef();
   constructor(props) {
     super(props);
-    this.state.offset = getOffset(props.location);
+    const { location } = props;
+    this.state.category = getCategory(location);
+    this.state.offset = getOffset(location);
   }
-  async fetchList(newOffset = 0) {
-    const { loading, limit, count, keyword, sort } = this.state;
+  async fetchList(props) {
+    const {
+      loading,
+      limit,
+      offset,
+      count,
+      sort,
+      keyword,
+      category
+    } = this.state;
     if (loading) {
+      return;
+    }
+    // 如果是搜索但是无关键字
+    if (category === searchKey && !keyword) {
       return;
     }
     this.setState({
@@ -62,19 +87,18 @@ class Home extends React.Component {
         sort,
         keyword,
         limit,
-        offset: newOffset
+        offset
       });
       const arr = this.state.books.slice(0);
       const updateData = {
-        offset: newOffset,
         books: arr.concat(data.books)
       };
-      let current = count;
-      if (newOffset === 0) {
+      let currentCount = count;
+      if (offset === 0) {
         updateData.count = data.count;
-        current = data.count;
+        currentCount = data.count;
       }
-      if (newOffset + data.books.length >= current) {
+      if (offset + data.books.length >= currentCount) {
         updateData.done = true;
       }
       this.setState(updateData);
@@ -89,7 +113,7 @@ class Home extends React.Component {
   }
   async componentDidMount() {
     try {
-      await this.fetchList(this.state.offset);
+      await this.fetchList();
     } finally {
       const io = new IntersectionObserver(([e]) => {
         if (!e.isIntersecting) {
@@ -109,21 +133,49 @@ class Home extends React.Component {
     if (newProps.location.search === this.props.location.search) {
       return;
     }
-    const offset = getOffset(newProps.location);
-    this.fetchList(offset);
+    const { location } = newProps;
+    const category = getCategory(location);
+    const offset = getOffset(location);
+    const keyword = getKeyword(location);
+    const data = {
+      category,
+      offset,
+      keyword
+    };
+    this.setState(data, () => {
+      this.fetchList(newProps);
+    });
+  }
+  goTo(query, replaced = false) {
+    const { history, location } = this.props;
+    let params = query;
+    if (!replaced) {
+      const currentQuery = parseQuery(location);
+      params = Object.assign({}, currentQuery, query);
+    }
+    const str = qs.stringify(params);
+    history.push(`${HOME_PATH}?${str}`);
   }
   loadMore() {
-    const { history } = this.props;
-    const { offset, limit } = this.state;
-    history.push(`${HOME_PATH}?offset=${offset + limit}`);
+    const { limit, offset, category } = this.state;
+    // 搜索页面无需要自动加载
+    if (category === searchKey) {
+      return;
+    }
+    this.goTo({
+      offset: limit + offset
+    });
   }
   renderList() {
-    const { books } = this.state;
+    const { books, offset } = this.state;
     if (books.length === 0) {
       return;
     }
     const arr = books.map(item => {
-      const url = BOOK_DETAIL_PATH.replace(":id", item.id);
+      const url = `${BOOK_DETAIL_PATH.replace(
+        ":id",
+        item.id
+      )}?offset=${offset}`;
       let cover = null;
       if (item.cover) {
         cover = <ImageView url={item.cover} />;
@@ -152,36 +204,64 @@ class Home extends React.Component {
       </div>
     );
   }
-  reset() {
-    this.setState({
-      keyword: "",
-      sort: "",
-      done: false,
-      books: []
-    });
+  reset(cb) {
+    this.setState(
+      {
+        done: false,
+        books: []
+      },
+      cb
+    );
+  }
+  renderAutoLoadMore() {
+    const { done, category } = this.state;
+    let content = null;
+    if (!done && category !== searchKey) {
+      content = (
+        <div>
+          <Icon type="appstore" />
+          正在加载更多...
+        </div>
+      );
+    }
+    return (
+      <div className="loadMore" ref={this.loadMoreRef}>
+        {content}
+      </div>
+    );
   }
   render() {
-    const { current, inited, done } = this.state;
+    const { inited, done, category } = this.state;
     return (
       <div className="Home">
         <Menu
           className="menu"
           mode="horizontal"
-          selectedKeys={[current]}
+          selectedKeys={[category]}
           onClick={e => {
             const { key } = e;
-            const data = {
-              current: key
-            };
-            if (key === hotKey) {
-              data.sort = "-hot";
-            }
-            this.reset();
-            this.setState(data, () => {
-              if (key !== searchKey) {
-                this.fetchList();
-              }
+            this.reset(() => {
+              this.goTo(
+                {
+                  category: key
+                },
+                true
+              );
             });
+
+            // const data = {
+            //   current: key
+            // };
+            // if (key === hotKey) {
+            //   data.sort = "-hot";
+            // }
+            // this.reset();
+            // this.setState(data, () => {
+            //   history.push(`${HOME_PATH}?offset=${offset + limit}`);
+            //   if (key !== searchKey) {
+            //     this.fetchList();
+            //   }
+            // });
           }}
         >
           <Menu.Item key={homeKey}>
@@ -197,7 +277,7 @@ class Home extends React.Component {
             搜索
           </Menu.Item>
         </Menu>
-        {current === searchKey && (
+        {category === searchKey && (
           <div className="keyword">
             <Search
               size="large"
@@ -224,16 +304,7 @@ class Home extends React.Component {
           </div>
         )}
         {this.renderList()}
-        {
-          <div className="loadMore" ref={this.loadMoreRef}>
-            {!done && (
-              <div>
-                <Icon type="appstore" />
-                正在加载更多...
-              </div>
-            )}
-          </div>
-        }
+        {this.renderAutoLoadMore()}
       </div>
     );
   }

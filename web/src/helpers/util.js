@@ -1,4 +1,5 @@
 import moment from "moment";
+import qs from "querystring";
 
 import { sha256 } from "./crypto";
 
@@ -61,4 +62,11 @@ export function getTimeline(date) {
 
 export function generatePassword(pass) {
   return sha256(pass + hash);
+}
+
+export function parseQuery(location) {
+  if (!location || !location.search) {
+    return null;
+  }
+  return qs.parse(location.search.substring(1));
 }

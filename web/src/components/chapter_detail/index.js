@@ -2,7 +2,7 @@ import React from "react";
 import { Button, Icon, message, Spin, PageHeader, Modal } from "antd";
 import { throttle } from "throttle-debounce";
 
-import { BOOK_CHAPTER_PATH, BOOK_DETAIL_PATH } from "../../paths";
+import { BOOK_CHAPTER_PATH } from "../../paths";
 import "./chapter_detail.sass";
 import * as bookService from "../../services/book";
 
@@ -141,7 +141,7 @@ class ChapterDetail extends React.Component {
           title={current && current.title}
           subTitle={name}
           onBack={() => {
-            history.push(BOOK_DETAIL_PATH.replace(":id", id));
+            history.goBack();
           }}
         />
         <div className="btns">
