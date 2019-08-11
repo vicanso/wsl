@@ -1,8 +1,9 @@
 import React from "react";
 import { Button, Icon, message, Spin, PageHeader, Modal } from "antd";
 import { throttle } from "throttle-debounce";
+import { Link } from "react-router-dom";
 
-import { BOOK_CHAPTER_PATH } from "../../paths";
+import { BOOK_CHAPTER_PATH, HOME_PATH } from "../../paths";
 import "./chapter_detail.sass";
 import * as bookService from "../../services/book";
 
@@ -151,6 +152,11 @@ class ChapterDetail extends React.Component {
           onBack={() => {
             history.goBack();
           }}
+          extra={[
+            <Link className="goBackHome" to={HOME_PATH}>
+              <Icon type="home" />
+            </Link>
+          ]}
         />
         <div className="btns">
           <ButtonGroup>

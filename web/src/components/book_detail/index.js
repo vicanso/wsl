@@ -146,6 +146,11 @@ class BookDetail extends React.Component {
           onBack={() => history.push(`${HOME_PATH}${location.search}`)}
           title={detail && detail.name}
           subTitle={detail && detail.author}
+          extra={[
+            <Link className="goBackHome" to={HOME_PATH}>
+              <Icon type="home" />
+            </Link>
+          ]}
         />
         {loading && (
           <div className="loadingWrapper">
