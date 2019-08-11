@@ -122,15 +122,7 @@ class Home extends React.Component {
     }
   }
   async fetchList(props) {
-    const {
-      loading,
-      limit,
-      offset,
-      count,
-      sort,
-      keyword,
-      category
-    } = this.state;
+    const { loading, limit, offset, count, sort, keyword } = this.state;
     if (loading) {
       return;
     }
