@@ -37,27 +37,30 @@ class ChapterDetail extends React.Component {
       message.error(err.message);
     }
   }
-  componentWillMount() {
-    this.fetchChapterContent();
-    this.fetchDetail();
-    window.addEventListener(
-      "scroll",
-      throttle(1000, () => {
-        const { state, contentRef } = this;
-        if (state.showFunctions || !contentRef.current) {
-          return;
-        }
-        const scrollTop =
-          window.document.documentElement.scrollTop ||
-          window.document.body.scrollTop;
-        const height = this.contentRef.current.clientHeight;
-        if (scrollTop + window.innerHeight > height - 80) {
-          this.setState({
-            showFunctions: true
-          });
-        }
-      })
-    );
+  async componentWillMount() {
+    try {
+      await this.fetchDetail();
+      await this.fetchChapterContent();
+    } finally {
+      window.addEventListener(
+        "scroll",
+        throttle(1000, () => {
+          const { state, contentRef } = this;
+          if (state.showFunctions || !contentRef.current) {
+            return;
+          }
+          const scrollTop =
+            window.document.documentElement.scrollTop ||
+            window.document.body.scrollTop;
+          const height = this.contentRef.current.clientHeight;
+          if (scrollTop + window.innerHeight > height - 80) {
+            this.setState({
+              showFunctions: true
+            });
+          }
+        })
+      );
+    }
   }
   componentWillReceiveProps(newProps) {
     const { no } = newProps.match.params;
@@ -73,7 +76,7 @@ class ChapterDetail extends React.Component {
     }
   }
   async fetchChapterContent() {
-    const { id, no, loading } = this.state;
+    const { id, no, loading, name } = this.state;
     if (loading) {
       return;
     }
@@ -100,7 +103,12 @@ class ChapterDetail extends React.Component {
         showFunctions: false,
         current
       });
-      bookService.setRead(id, no, current.title);
+      bookService.setRead({
+        id,
+        name,
+        no: no || 0,
+        title: current.title
+      });
     } catch (err) {
       message.error(err.message);
       this.setState({

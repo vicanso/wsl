@@ -93,6 +93,11 @@ export async function getChapterContent(bookID, chapterIndex) {
   return getChapterContentFromCache(bookID, chapterIndex);
 }
 
+// clearRead 清除阅读记录
+export async function clearRead() {
+  await localforage.removeItem(readBookKey);
+}
+
 // listRead 获取阅读书籍
 export async function listRead() {
   const data = await localforage.getItem(readBookKey);
@@ -104,11 +109,11 @@ export async function listRead() {
 }
 
 // setRead 设置书籍阅读信息
-export async function setRead(bookID, chapterIndex, title) {
+export async function setRead({ id, name, no, title }) {
   const bookList = await listRead();
   let found = -1;
   bookList.forEach((item, index) => {
-    if (item.bookID === bookID) {
+    if (item.id === id) {
       found = index;
     }
   });
@@ -116,9 +121,10 @@ export async function setRead(bookID, chapterIndex, title) {
     bookList.splice(found, 1);
   }
   bookList.push({
-    bookID,
+    id,
+    name,
     title,
-    chapterIndex,
+    no,
     updatedAt: new Date().toISOString()
   });
   // 最多只保存20个记录

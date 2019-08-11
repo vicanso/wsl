@@ -43,6 +43,30 @@
           color: #a3b8cc
           border-radius: 3px
           padding: 2px 5px
+  .recentlyRead
+    ul
+      margin: 0
+      padding: 0
+      list-style: none
+      li
+        border-bottom: $BORDER_GRAY
+        &.clear
+          text-align: center
+          padding: 10px
+          color: $COLOR_BLUE 
+          cursor: pointer
+        &:nth-child(odd)
+          background-color: #fff
+        a
+          color: $COLOR_GRAY
+          display: block
+          padding: 15px
+        span
+          float: right
+          font-size: 12px
+          &.time
+            margin-left: 2px
+            color: $COLOR_LIGHT_GRAY
   .loadMore
     margin: 15px
     text-align: center
