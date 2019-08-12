@@ -51,13 +51,15 @@ export function getTimeline(date) {
   if (offset < 60 * 60) {
     return "一小时内";
   }
-  if (offset < 24 * 60 * 60) {
+  const layout = "YYYY-MM-DD";
+  const formatDate = v.format(layout);
+  if (formatDate === moment().format(layout)) {
     return "今天";
   }
-  if (offset < 2 * 24 * 60 * 60) {
+  if (formatDate === moment().add(-1, "day").format(layout)) {
     return "昨天";
   }
-  return v.format("YYYY-MM-DD");
+  return formatDate;
 }
 
 export function generatePassword(pass) {
