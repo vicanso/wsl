@@ -125,6 +125,8 @@ func (ctrl bookCtrl) detail(c *cod.Context) (err error) {
 	if err != nil {
 		return
 	}
+	// 查询详情一次则hot增加1
+	bookSrv.IncHotByID(book.ID, 1)
 
 	c.CacheMaxAge("1m")
 	c.Body = book
@@ -151,6 +153,8 @@ func (ctrl bookCtrl) listChapter(c *cod.Context) (err error) {
 	if err != nil {
 		return
 	}
+	// 获取一次章节列表热度增加1
+	bookSrv.IncHotByID(uint(bookID), 1)
 
 	c.CacheMaxAge("1m")
 	c.Body = &struct {

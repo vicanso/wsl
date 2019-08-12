@@ -203,6 +203,14 @@ func (srv *BookSrv) Count(params BookQueryParams) (count int, err error) {
 	return
 }
 
+// IncHotByID inc hot value by id
+func (srv *BookSrv) IncHotByID(id uint, value int) (err error) {
+	err = pgGetClient().Model(&Book{
+		ID: id,
+	}).UpdateColumn("hot", gorm.Expr("hot + ?", value)).Error
+	return
+}
+
 // List list book
 func (srv *BookSrv) List(params BookQueryParams) (result []*Book, err error) {
 	result = make([]*Book, 0)
