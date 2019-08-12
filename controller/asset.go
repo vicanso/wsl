@@ -126,7 +126,7 @@ func (ctrl assetCtrl) index(c *cod.Context) (err error) {
 	}
 	books, err := bookSrv.List(service.BookQueryParams{
 		Limit:  1000,
-		Fields: "id,name",
+		Fields: "id,name,summary",
 	})
 	if err != nil {
 		return
@@ -134,7 +134,7 @@ func (ctrl assetCtrl) index(c *cod.Context) (err error) {
 	arr := make([]string, len(books))
 	for index, item := range books {
 		url := fmt.Sprintf(bookDetailURL, item.ID)
-		html := fmt.Sprintf(`<li><a href="%s">%s</a></li>`, url, item.Name)
+		html := fmt.Sprintf(`<li><a href="%s">%s</a><p>%s</p></li>`, url, item.Name, item.Summary)
 		arr[index] = html
 	}
 	content := "<ul>" + strings.Join(arr, "") + "</ul>"
