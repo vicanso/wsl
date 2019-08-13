@@ -26,13 +26,15 @@
       var ENV = "%NODE_ENV%" || "production";
     </script>
     <script>
-      var _hmt = _hmt || [];
-      (function() {
-        var hm = document.createElement("script");
-        hm.src = "https://hm.baidu.com/hm.js?e85e95e7fac29938d693cd46364aa56b";
-        var s = document.getElementsByTagName("script")[0]; 
-        s.parentNode.insertBefore(hm, s);
-      })();
+      if (window.ENV === "production") {
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?e85e95e7fac29938d693cd46364aa56b";
+          var s = document.getElementsByTagName("script")[0]; 
+          s.parentNode.insertBefore(hm, s);
+        })();
+      }
     </script>
   </head>
   <body>

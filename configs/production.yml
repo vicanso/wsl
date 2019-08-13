@@ -9,3 +9,7 @@ postgres:
   password: PG_PASS
 # 文件目录
 filePath: /tmp/wsl
+
+# 资源目录
+resources:
+  font: /font

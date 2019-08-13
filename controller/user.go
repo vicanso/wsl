@@ -105,6 +105,7 @@ func init() {
 		// 限制相同IP在60秒之内只能调用5次
 		newIPLimit(5, 60*time.Second, cs.ActionLogin),
 		shouldAnonymous,
+		middleware.ValidateCaptch(),
 		ctrl.register,
 	)
 	// 刷新user session的ttl
@@ -133,6 +134,7 @@ func init() {
 		loginLimit,
 		// 限制相同IP在60秒之内只能调用10次
 		newIPLimit(10, 60*time.Second, cs.ActionLogin),
+		middleware.ValidateCaptch(),
 		ctrl.login,
 	)
 	// 用户退出登录

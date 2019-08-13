@@ -23,3 +23,5 @@ export const RANDOM_KEYS = `${prefix}/random-keys`;
 export const BOOKS = `${prefix}/books/v1`;
 export const BOOKS_DETAIL = `${prefix}/books/v1/:id`;
 export const BOOKS_CHAPTERS = `${prefix}/books/v1/:id/chapters`;
+
+export const CAPTCHA = `${prefix}/captcha`;

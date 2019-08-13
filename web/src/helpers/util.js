@@ -56,7 +56,12 @@ export function getTimeline(date) {
   if (formatDate === moment().format(layout)) {
     return "今天";
   }
-  if (formatDate === moment().add(-1, "day").format(layout)) {
+  if (
+    formatDate ===
+    moment()
+      .add(-1, "day")
+      .format(layout)
+  ) {
     return "昨天";
   }
   return formatDate;

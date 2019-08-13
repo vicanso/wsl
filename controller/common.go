@@ -40,6 +40,8 @@ func init() {
 	g.GET("/routers", ctrl.routers)
 
 	g.GET("/random-keys", ctrl.randomKeys)
+
+	g.GET("/captcha", ctrl.captcha)
 }
 
 func (ctrl commonCtrl) ping(c *cod.Context) error {
@@ -79,5 +81,16 @@ func (ctrl commonCtrl) randomKeys(c *cod.Context) (err error) {
 	c.Body = map[string][]string{
 		"keys": result,
 	}
+	return
+}
+
+func (ctrl commonCtrl) captcha(c *cod.Context) (err error) {
+	info, err := service.GetCaptcha()
+	if err != nil {
+		return
+	}
+	// c.SetContentTypeByExt(".png")
+	// c.Body = info.Data
+	c.Body = info
 	return
 }

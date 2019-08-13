@@ -19,9 +19,9 @@ import (
 	"time"
 
 	"github.com/vicanso/cod"
+	"github.com/vicanso/hes"
 	"github.com/vicanso/wsl/log"
 	"github.com/vicanso/wsl/service"
-	"github.com/vicanso/hes"
 	"go.uber.org/zap"
 
 	concurrentLimiter "github.com/vicanso/cod-concurrent-limiter"
@@ -39,6 +39,7 @@ var (
 		Message:    "request to frequently",
 		Category:   errLimitCategory,
 	}
+	redisSrv = new(service.RedisSrv)
 )
 
 // createConcurrentLimitLock 创建并发限制的lock函数
@@ -47,7 +48,7 @@ func createConcurrentLimitLock(prefix string, ttl time.Duration, withDone bool) 
 		k := concurrentLimitKeyPrefix + "-" + prefix + "-" + key
 		done = nil
 		if withDone {
-			success, redisDone, err := service.RedisLockWithDone(k, ttl)
+			success, redisDone, err := redisSrv.LockWithDone(k, ttl)
 			done = func() {
 				err := redisDone()
 				if err != nil {
@@ -59,7 +60,7 @@ func createConcurrentLimitLock(prefix string, ttl time.Duration, withDone bool) 
 			}
 			return success, done, err
 		}
-		success, err = service.RedisLock(k, ttl)
+		success, err = redisSrv.Lock(k, ttl)
 		return
 	}
 }
@@ -76,7 +77,7 @@ func NewConcurrentLimit(keys []string, ttl time.Duration, prefix string) cod.Han
 func NewIPLimit(maxCount int64, ttl time.Duration, prefix string) cod.Handler {
 	return func(c *cod.Context) (err error) {
 		key := ipLimitKeyPrefix + "-" + prefix + "-" + c.RealIP()
-		count, err := service.RedisIncWithTTL(key, ttl)
+		count, err := redisSrv.IncWithTTL(key, ttl)
 		if err != nil {
 			return
 		}

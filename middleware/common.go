@@ -16,17 +16,29 @@ package middleware
 
 import (
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/vicanso/cod"
 	"github.com/vicanso/hes"
+	"github.com/vicanso/wsl/service"
+)
+
+const (
+	xCaptchHeader = "X-Captcha"
+	errCategory   = "common-validate"
 )
 
 var (
 	errQueryNotAllow = &hes.Error{
 		StatusCode: http.StatusBadRequest,
 		Message:    "query is not allowed",
-		Category:   "common-validate",
+		Category:   errCategory,
+	}
+	errCaptchIsInvalid = &hes.Error{
+		StatusCode: http.StatusBadRequest,
+		Message:    "captcha is invalid",
+		Category:   errCategory,
 	}
 )
 
@@ -51,5 +63,30 @@ func WaitFor(d time.Duration) cod.Handler {
 			time.Sleep(time.Duration(ns-use) * time.Nanosecond)
 		}
 		return
+	}
+}
+
+// ValidateCaptch validate chapter
+func ValidateCaptch() cod.Handler {
+	return func(c *cod.Context) (err error) {
+		value := c.GetRequestHeader(xCaptchHeader)
+		if value == "" {
+			err = errCaptchIsInvalid
+			return
+		}
+		arr := strings.Split(value, ":")
+		if len(arr) != 2 {
+			err = errCaptchIsInvalid
+			return
+		}
+		valid, err := service.ValidateCaptcha(arr[0], arr[1])
+		if err != nil {
+			return err
+		}
+		if !valid {
+			err = errCaptchIsInvalid
+			return
+		}
+		return c.Next()
 	}
 }
