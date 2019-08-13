@@ -77,7 +77,7 @@ class ChapterDetail extends React.Component {
     }
   }
   async fetchChapterContent() {
-    const { id, no, loading, name } = this.state;
+    const { id, no, loading, name, chapterCount } = this.state;
     if (loading) {
       return;
     }
@@ -104,11 +104,13 @@ class ChapterDetail extends React.Component {
         showFunctions: false,
         current
       });
+      let index = no || 0;
       bookService.setRead({
         id,
         name,
-        no: no || 0,
-        title: current.title
+        no: index,
+        title: current.title,
+        done: index === chapterCount - 1
       });
     } catch (err) {
       message.error(err.message);

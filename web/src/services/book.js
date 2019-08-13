@@ -109,7 +109,7 @@ export async function listRead() {
 }
 
 // setRead 设置书籍阅读信息
-export async function setRead({ id, name, no, title }) {
+export async function setRead({ id, name, no, title, done }) {
   const bookList = await listRead();
   let found = -1;
   bookList.forEach((item, index) => {
@@ -125,6 +125,7 @@ export async function setRead({ id, name, no, title }) {
     name,
     title,
     no,
+    done,
     updatedAt: new Date().toISOString()
   });
   // 最多只保存20个记录

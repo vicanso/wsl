@@ -303,6 +303,14 @@ class Home extends React.Component {
         return (
           <li key={item.id}>
             <Link to={url}>
+              {item.done && (
+                <Icon
+                  style={{
+                    marginRight: "3px"
+                  }}
+                  type="check-circle"
+                />
+              )}
               {item.title}
               <span className="time">
                 (阅读于：{getTimeline(item.updatedAt)})
