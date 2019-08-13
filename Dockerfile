@@ -25,7 +25,7 @@ RUN addgroup -g 1000 go \
   && apk add --no-cache ca-certificates
 
 COPY --from=builder /wsl/wsl /usr/local/bin/wsl
-COPY --from=webbuilder /wsl/font /fon
+COPY --from=webbuilder /wsl/font /font
 
 USER go
 
