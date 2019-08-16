@@ -17,7 +17,7 @@ package controller
 import (
 	"strconv"
 
-	"github.com/vicanso/cod"
+	"github.com/vicanso/elton"
 	"github.com/vicanso/wsl/config"
 	"github.com/vicanso/wsl/cs"
 	"github.com/vicanso/wsl/router"
@@ -65,7 +65,7 @@ func init() {
 
 }
 
-func (ctrl bookCtrl) syncWsl(c *cod.Context) (err error) {
+func (ctrl bookCtrl) syncWsl(c *elton.Context) (err error) {
 	filePath := config.GetString("filePath")
 	go func() {
 		err := bookSrv.SyncFromFile(filePath)
@@ -82,7 +82,7 @@ func (ctrl bookCtrl) syncWsl(c *cod.Context) (err error) {
 }
 
 // list list book
-func (ctrl bookCtrl) list(c *cod.Context) (err error) {
+func (ctrl bookCtrl) list(c *elton.Context) (err error) {
 	params := &listBookParmas{}
 	err = validate.Do(params, c.Query())
 	if err != nil {
@@ -119,7 +119,7 @@ func (ctrl bookCtrl) list(c *cod.Context) (err error) {
 }
 
 // detail get detail content
-func (ctrl bookCtrl) detail(c *cod.Context) (err error) {
+func (ctrl bookCtrl) detail(c *elton.Context) (err error) {
 	bookID, _ := strconv.Atoi(c.Param("bookID"))
 	book, err := bookSrv.GetByID(uint(bookID))
 	if err != nil {
@@ -134,7 +134,7 @@ func (ctrl bookCtrl) detail(c *cod.Context) (err error) {
 }
 
 // listChapter list chapter
-func (ctrl bookCtrl) listChapter(c *cod.Context) (err error) {
+func (ctrl bookCtrl) listChapter(c *elton.Context) (err error) {
 	params := &listChapterParams{}
 	err = validate.Do(params, c.Query())
 	if err != nil {
@@ -165,7 +165,7 @@ func (ctrl bookCtrl) listChapter(c *cod.Context) (err error) {
 	return
 }
 
-func (ctrl bookCtrl) update(c *cod.Context) (err error) {
+func (ctrl bookCtrl) update(c *elton.Context) (err error) {
 	params := &updateBookParams{}
 	err = validate.Do(params, c.RequestBody)
 	if err != nil {

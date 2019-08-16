@@ -18,13 +18,13 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/vicanso/cod"
+	"github.com/vicanso/elton"
 	"github.com/vicanso/hes"
 	"github.com/vicanso/wsl/log"
 	"github.com/vicanso/wsl/service"
 	"go.uber.org/zap"
 
-	concurrentLimiter "github.com/vicanso/cod-concurrent-limiter"
+	concurrentLimiter "github.com/vicanso/elton-concurrent-limiter"
 )
 
 const (
@@ -44,7 +44,7 @@ var (
 
 // createConcurrentLimitLock 创建并发限制的lock函数
 func createConcurrentLimitLock(prefix string, ttl time.Duration, withDone bool) concurrentLimiter.Lock {
-	return func(key string, _ *cod.Context) (success bool, done func(), err error) {
+	return func(key string, _ *elton.Context) (success bool, done func(), err error) {
 		k := concurrentLimitKeyPrefix + "-" + prefix + "-" + key
 		done = nil
 		if withDone {
@@ -66,7 +66,7 @@ func createConcurrentLimitLock(prefix string, ttl time.Duration, withDone bool) 
 }
 
 // NewConcurrentLimit create a concurrent limit
-func NewConcurrentLimit(keys []string, ttl time.Duration, prefix string) cod.Handler {
+func NewConcurrentLimit(keys []string, ttl time.Duration, prefix string) elton.Handler {
 	return concurrentLimiter.New(concurrentLimiter.Config{
 		Lock: createConcurrentLimitLock(prefix, ttl, false),
 		Keys: keys,
@@ -74,8 +74,8 @@ func NewConcurrentLimit(keys []string, ttl time.Duration, prefix string) cod.Han
 }
 
 // NewIPLimit create a limit middleware by ip address
-func NewIPLimit(maxCount int64, ttl time.Duration, prefix string) cod.Handler {
-	return func(c *cod.Context) (err error) {
+func NewIPLimit(maxCount int64, ttl time.Duration, prefix string) elton.Handler {
+	return func(c *elton.Context) (err error) {
 		key := ipLimitKeyPrefix + "-" + prefix + "-" + c.RealIP()
 		count, err := redisSrv.IncWithTTL(key, ttl)
 		if err != nil {

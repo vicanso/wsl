@@ -19,7 +19,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/vicanso/cod"
+	"github.com/vicanso/elton"
 	"github.com/vicanso/hes"
 	"github.com/vicanso/wsl/service"
 )
@@ -43,7 +43,7 @@ var (
 )
 
 // NoQuery no query middleware
-func NoQuery(c *cod.Context) (err error) {
+func NoQuery(c *elton.Context) (err error) {
 	if c.Request.URL.RawQuery != "" {
 		err = errQueryNotAllow
 		return
@@ -52,9 +52,9 @@ func NoQuery(c *cod.Context) (err error) {
 }
 
 // WaitFor at least wait for duration
-func WaitFor(d time.Duration) cod.Handler {
+func WaitFor(d time.Duration) elton.Handler {
 	ns := d.Nanoseconds()
-	return func(c *cod.Context) (err error) {
+	return func(c *elton.Context) (err error) {
 		start := time.Now()
 		err = c.Next()
 		use := time.Now().UnixNano() - start.UnixNano()
@@ -67,8 +67,8 @@ func WaitFor(d time.Duration) cod.Handler {
 }
 
 // ValidateCaptch validate chapter
-func ValidateCaptch() cod.Handler {
-	return func(c *cod.Context) (err error) {
+func ValidateCaptch() elton.Handler {
+	return func(c *elton.Context) (err error) {
 		value := c.GetRequestHeader(xCaptchHeader)
 		if value == "" {
 			err = errCaptchIsInvalid

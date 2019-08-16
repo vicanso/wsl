@@ -18,7 +18,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/vicanso/cod"
+	"github.com/vicanso/elton"
 	"github.com/vicanso/wsl/config"
 	"github.com/vicanso/wsl/cs"
 	"github.com/vicanso/wsl/util"
@@ -34,7 +34,7 @@ const (
 )
 
 var (
-	signedKeys = new(cod.AtomicSignedKeys)
+	signedKeys = new(elton.AtomicSignedKeys)
 )
 
 type (
@@ -196,7 +196,7 @@ func (srv *ConfigurationSrv) Refresh() (err error) {
 }
 
 // GetSignedKeys get signed keys
-func GetSignedKeys() cod.SignedKeysGenerator {
+func GetSignedKeys() elton.SignedKeysGenerator {
 	return signedKeys
 }
 

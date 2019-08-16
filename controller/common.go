@@ -21,7 +21,7 @@ import (
 	"github.com/vicanso/wsl/service"
 	"github.com/vicanso/wsl/util"
 
-	"github.com/vicanso/cod"
+	"github.com/vicanso/elton"
 	"github.com/vicanso/wsl/router"
 )
 
@@ -44,12 +44,12 @@ func init() {
 	g.GET("/captcha", ctrl.captcha)
 }
 
-func (ctrl commonCtrl) ping(c *cod.Context) error {
+func (ctrl commonCtrl) ping(c *elton.Context) error {
 	c.BodyBuffer = bytes.NewBufferString("pong")
 	return nil
 }
 
-func (ctrl commonCtrl) location(c *cod.Context) (err error) {
+func (ctrl commonCtrl) location(c *elton.Context) (err error) {
 	info, err := service.GetLocationByIP(c.RealIP(), c)
 	if err != nil {
 		return
@@ -58,14 +58,14 @@ func (ctrl commonCtrl) location(c *cod.Context) (err error) {
 	return
 }
 
-func (ctrl commonCtrl) routers(c *cod.Context) (err error) {
+func (ctrl commonCtrl) routers(c *elton.Context) (err error) {
 	c.Body = map[string]interface{}{
-		"routers": c.Cod().Routers,
+		"routers": c.Elton().Routers,
 	}
 	return
 }
 
-func (ctrl commonCtrl) randomKeys(c *cod.Context) (err error) {
+func (ctrl commonCtrl) randomKeys(c *elton.Context) (err error) {
 	n, _ := strconv.Atoi(c.QueryParam("n"))
 	size, _ := strconv.Atoi(c.QueryParam("size"))
 	if size < 1 {
@@ -84,7 +84,7 @@ func (ctrl commonCtrl) randomKeys(c *cod.Context) (err error) {
 	return
 }
 
-func (ctrl commonCtrl) captcha(c *cod.Context) (err error) {
+func (ctrl commonCtrl) captcha(c *elton.Context) (err error) {
 	info, err := service.GetCaptcha()
 	if err != nil {
 		return

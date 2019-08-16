@@ -23,11 +23,11 @@ import (
 	"strings"
 
 	"github.com/gobuffalo/packr/v2"
-	"github.com/vicanso/cod"
+	"github.com/vicanso/elton"
 	"github.com/vicanso/wsl/router"
 	"github.com/vicanso/wsl/service"
 
-	staticServe "github.com/vicanso/cod-static-serve"
+	staticServe "github.com/vicanso/elton-static-serve"
 )
 
 type (
@@ -99,7 +99,7 @@ func init() {
 	}))
 }
 
-func getFileContetAndSetContentType(c *cod.Context, file string) (buf []byte, err error) {
+func getFileContetAndSetContentType(c *elton.Context, file string) (buf []byte, err error) {
 	buf, err = box.Find(file)
 	if err != nil {
 		return
@@ -109,7 +109,7 @@ func getFileContetAndSetContentType(c *cod.Context, file string) (buf []byte, er
 	return
 }
 
-func sendFile(c *cod.Context, file string) (err error) {
+func sendFile(c *elton.Context, file string) (err error) {
 	buf, err := getFileContetAndSetContentType(c, file)
 	if err != nil {
 		return
@@ -118,7 +118,7 @@ func sendFile(c *cod.Context, file string) (err error) {
 	return
 }
 
-func (ctrl assetCtrl) index(c *cod.Context) (err error) {
+func (ctrl assetCtrl) index(c *elton.Context) (err error) {
 	c.CacheMaxAge("1m")
 	buf, err := getFileContetAndSetContentType(c, indexFile)
 	if err != nil {
@@ -144,7 +144,7 @@ func (ctrl assetCtrl) index(c *cod.Context) (err error) {
 	return
 }
 
-func (ctrl assetCtrl) bookDetail(c *cod.Context) (err error) {
+func (ctrl assetCtrl) bookDetail(c *elton.Context) (err error) {
 	c.CacheMaxAge("1m")
 	buf, err := getFileContetAndSetContentType(c, indexFile)
 	if err != nil {
@@ -176,7 +176,7 @@ func (ctrl assetCtrl) bookDetail(c *cod.Context) (err error) {
 	return
 }
 
-func (ctrl assetCtrl) bookChapterDetail(c *cod.Context) (err error) {
+func (ctrl assetCtrl) bookChapterDetail(c *elton.Context) (err error) {
 	c.CacheMaxAge("1m")
 	buf, err := getFileContetAndSetContentType(c, indexFile)
 	if err != nil {
@@ -202,12 +202,12 @@ func (ctrl assetCtrl) bookChapterDetail(c *cod.Context) (err error) {
 	return
 }
 
-func (ctrl assetCtrl) adminIndex(c *cod.Context) (err error) {
+func (ctrl assetCtrl) adminIndex(c *elton.Context) (err error) {
 	c.CacheMaxAge("10s")
 	return sendFile(c, indexFile)
 }
 
-func (ctrl assetCtrl) favIcon(c *cod.Context) (err error) {
-	c.SetHeader(cod.HeaderAcceptEncoding, "public, max-age=3600, s-maxage=600")
+func (ctrl assetCtrl) favIcon(c *elton.Context) (err error) {
+	c.SetHeader(elton.HeaderAcceptEncoding, "public, max-age=3600, s-maxage=600")
 	return sendFile(c, "favicon.ico")
 }

@@ -19,8 +19,8 @@ import (
 
 	"github.com/jinzhu/gorm"
 	"github.com/lib/pq"
-	"github.com/vicanso/cod"
-	session "github.com/vicanso/cod-session"
+	"github.com/vicanso/elton"
+	session "github.com/vicanso/elton-session"
 	"github.com/vicanso/hes"
 	"github.com/vicanso/wsl/cs"
 	"github.com/vicanso/wsl/util"
@@ -355,7 +355,7 @@ func (u *UserSession) ClearSessionID() {
 }
 
 // NewUserSession create a user session
-func NewUserSession(c *cod.Context) *UserSession {
+func NewUserSession(c *elton.Context) *UserSession {
 	v := c.Get(session.Key)
 	if v == nil {
 		return nil
