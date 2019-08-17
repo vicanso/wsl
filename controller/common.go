@@ -16,7 +16,9 @@ package controller
 
 import (
 	"bytes"
+	"fmt"
 	"strconv"
+	"strings"
 
 	"github.com/vicanso/wsl/service"
 	"github.com/vicanso/wsl/util"
@@ -42,6 +44,9 @@ func init() {
 	g.GET("/random-keys", ctrl.randomKeys)
 
 	g.GET("/captcha", ctrl.captcha)
+
+	g.GET("/sitemap.xml", ctrl.sitemap)
+	g.GET("/robots.txt", ctrl.robots)
 }
 
 func (ctrl commonCtrl) ping(c *elton.Context) error {
@@ -92,5 +97,50 @@ func (ctrl commonCtrl) captcha(c *elton.Context) (err error) {
 	// c.SetContentTypeByExt(".png")
 	// c.Body = info.Data
 	c.Body = info
+	return
+}
+
+func (ctrl commonCtrl) sitemap(c *elton.Context) (err error) {
+	template := `<?xml version="1.0" encoding="UTF-8"?>
+	<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"> 
+	  %s
+	</urlset>`
+	urlTemplate := `<url>
+		<loc>%s</loc>
+		<priority>%v</priority>
+	</url>`
+	books, err := bookSrv.List(service.BookQueryParams{
+		Limit: 200,
+	})
+	if err != nil {
+		return
+	}
+	homeURL := "https://wsl520.com/"
+	urls := make([]string, 0, 1000)
+	bookURL := homeURL + "book/%d"
+	bookPriority := 1.0
+	bookDetailURL := homeURL + "book/%d/chapter/%d"
+	bookDetailPriority := 0.63
+	urls = append(urls, fmt.Sprintf(urlTemplate, homeURL, 1.5))
+
+	for _, book := range books {
+
+		url := fmt.Sprintf(bookURL, book.ID)
+		urls = append(urls, fmt.Sprintf(urlTemplate, url, bookPriority))
+		for index := 0; index < book.ChapterCount; index++ {
+			url := fmt.Sprintf(bookDetailURL, book.ID, index)
+			urls = append(urls, fmt.Sprintf(urlTemplate, url, bookDetailPriority))
+		}
+	}
+	c.SetContentTypeByExt(".xml")
+	c.BodyBuffer = bytes.NewBufferString(fmt.Sprintf(template, strings.Join(urls, "")))
+	c.CacheMaxAge("5m")
+	return
+}
+
+func (ctrl commonCtrl) robots(c *elton.Context) (err error) {
+	c.BodyBuffer = bytes.NewBufferString(`
+Sitemap: https://wsl520.com/sitemap.xml
+	`)
 	return
 }
