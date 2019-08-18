@@ -119,10 +119,10 @@ func (ctrl commonCtrl) sitemap(c *elton.Context) (err error) {
 	homeURL := "https://wsl520.com/"
 	urls := make([]string, 0, 1000)
 	bookURL := homeURL + "book/%d"
-	bookPriority := 1.0
+	bookPriority := 0.9
 	bookDetailURL := homeURL + "book/%d/chapter/%d"
 	bookDetailPriority := 0.63
-	urls = append(urls, fmt.Sprintf(urlTemplate, homeURL, 1.5))
+	urls = append(urls, fmt.Sprintf(urlTemplate, homeURL, 1.0))
 
 	for _, book := range books {
 
