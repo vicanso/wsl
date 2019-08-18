@@ -108,6 +108,7 @@ func (ctrl commonCtrl) sitemap(c *elton.Context) (err error) {
 	urlTemplate := `<url>
 		<loc>%s</loc>
 		<priority>%v</priority>
+		<changefreq>daily</changefreq>
 	</url>`
 	books, err := bookSrv.List(service.BookQueryParams{
 		Limit: 200,

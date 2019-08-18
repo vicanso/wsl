@@ -134,7 +134,7 @@ func (ctrl assetCtrl) index(c *elton.Context) (err error) {
 	arr := make([]string, len(books))
 	for index, item := range books {
 		url := fmt.Sprintf(bookDetailURL, item.ID)
-		html := fmt.Sprintf(`<li><a href="%s">%s</a><p>%s</p></li>`, url, item.Name, item.Summary)
+		html := fmt.Sprintf(`<li><h3><a href="%s">%s</a></h3><p>%s</p></li>`, url, item.Name, item.Summary)
 		arr[index] = html
 	}
 	content := "<ul>" + strings.Join(arr, "") + "</ul>"
