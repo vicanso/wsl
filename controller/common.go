@@ -132,13 +132,14 @@ func (ctrl commonCtrl) sitemap(c *elton.Context) (err error) {
 			urls = append(urls, fmt.Sprintf(urlTemplate, url, bookDetailPriority))
 		}
 	}
+	c.CacheMaxAge("5m")
 	c.SetContentTypeByExt(".xml")
 	c.BodyBuffer = bytes.NewBufferString(fmt.Sprintf(template, strings.Join(urls, "")))
-	c.CacheMaxAge("5m")
 	return
 }
 
 func (ctrl commonCtrl) robots(c *elton.Context) (err error) {
+	c.CacheMaxAge("5m")
 	c.BodyBuffer = bytes.NewBufferString(`
 Sitemap: https://wsl520.com/sitemap.xml
 	`)
