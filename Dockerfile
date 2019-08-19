@@ -12,7 +12,7 @@ COPY --from=webbuilder /wsl /wsl
 
 RUN apk update \
   && apk add git make \
-  && git clone --depth=1 git@github.com:vicanso/gocc.git /gocc \
+  && git clone --depth=1 https://github.com/vicanso/gocc.git /gocc \
   && go get -u github.com/gobuffalo/packr/v2/packr2 \
   && cd /wsl \
   && make build
