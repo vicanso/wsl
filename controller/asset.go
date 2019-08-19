@@ -24,6 +24,7 @@ import (
 
 	"github.com/gobuffalo/packr/v2"
 	"github.com/vicanso/elton"
+	"github.com/vicanso/wsl/cs"
 	"github.com/vicanso/wsl/router"
 	"github.com/vicanso/wsl/service"
 
@@ -40,8 +41,9 @@ type (
 )
 
 var (
-	box                 = packr.New("asset", "../web/build")
-	contentPlacerholder = []byte("{CONTENT}")
+	box                = packr.New("asset", "../web/build")
+	contentPlaceholder = []byte("{CONTENT}")
+	titlePlaceHolder   = []byte("{TITLE}")
 )
 
 const (
@@ -54,7 +56,7 @@ const (
 	`
 	bookChapterURL      = "/book/%d/chapter/%d"
 	bookChapterTemplate = `<h4>章节：%s</h4>
-		<p>%s</p>
+		<div>%s</div>
 	`
 )
 
@@ -132,13 +134,18 @@ func (ctrl assetCtrl) index(c *elton.Context) (err error) {
 		return
 	}
 	arr := make([]string, len(books))
+	detailURL := bookDetailURL
+	if c.QueryParam("lang") == cs.LangTC {
+		detailURL = "/" + cs.LangTC + detailURL
+	}
 	for index, item := range books {
-		url := fmt.Sprintf(bookDetailURL, item.ID)
+		url := fmt.Sprintf(detailURL, item.ID)
 		html := fmt.Sprintf(`<li><h3><a href="%s">%s</a></h3><p>%s</p></li>`, url, item.Name, item.Summary)
 		arr[index] = html
 	}
 	content := "<ul>" + strings.Join(arr, "") + "</ul>"
-	buf = bytes.Replace(buf, contentPlacerholder, []byte(content), 1)
+	buf = bytes.Replace(buf, contentPlaceholder, []byte(content), 1)
+	buf = bytes.Replace(buf, titlePlaceHolder, []byte("卫斯理小说"), 1)
 
 	c.BodyBuffer = bytes.NewBuffer(buf)
 	return
@@ -164,13 +171,18 @@ func (ctrl assetCtrl) bookDetail(c *elton.Context) (err error) {
 		return
 	}
 	arr := make([]string, len(chapters))
+	chapterURL := bookChapterURL
+	if c.QueryParam("lang") == cs.LangTC {
+		chapterURL = "/" + cs.LangTC + chapterURL
+	}
 	for index, item := range chapters {
-		url := fmt.Sprintf(bookChapterURL, id, item.NO)
+		url := fmt.Sprintf(chapterURL, id, item.NO)
 		arr[index] = fmt.Sprintf(`<li><a href="%s">%s</a></li>`, url, item.Title)
 	}
 
 	html := fmt.Sprintf(bookDetailTemplate, book.Name, book.Author, book.Summary, strings.Join(arr, ""))
-	buf = bytes.Replace(buf, contentPlacerholder, []byte(html), 1)
+	buf = bytes.Replace(buf, contentPlaceholder, []byte(html), 1)
+	buf = bytes.Replace(buf, titlePlaceHolder, []byte(book.Name+"-卫斯理小说"), 1)
 
 	c.BodyBuffer = bytes.NewBuffer(buf)
 	return
@@ -183,6 +195,10 @@ func (ctrl assetCtrl) bookChapterDetail(c *elton.Context) (err error) {
 		return
 	}
 	id, _ := strconv.Atoi(c.Param("bookID"))
+	book, err := bookSrv.GetByID(uint(id))
+	if err != nil {
+		return
+	}
 	chapterNO, _ := strconv.Atoi(c.Param("bookChapterNO"))
 	chapters, err := bookSrv.ListChapter(service.ChapterQueryParams{
 		BookID: uint(id),
@@ -194,8 +210,13 @@ func (ctrl assetCtrl) bookChapterDetail(c *elton.Context) (err error) {
 	}
 	if len(chapters) != 0 {
 		chapter := chapters[0]
-		html := fmt.Sprintf(bookChapterTemplate, chapter.Title, chapter.Content)
-		buf = bytes.Replace(buf, contentPlacerholder, []byte(html), 1)
+		contentList := make([]string, 0)
+		for _, content := range strings.Split(chapter.Content, "\n") {
+			contentList = append(contentList, "<p>"+content+"</p>")
+		}
+		html := fmt.Sprintf(bookChapterTemplate, chapter.Title, strings.Join(contentList, ""))
+		buf = bytes.Replace(buf, contentPlaceholder, []byte(html), 1)
+		buf = bytes.Replace(buf, titlePlaceHolder, []byte(chapter.Title+"-"+book.Name+"-卫斯理小说"), 1)
 	}
 
 	c.BodyBuffer = bytes.NewBuffer(buf)

@@ -32,3 +32,8 @@ const (
 	// ConfigDiabled 禁用状态
 	ConfigDiabled
 )
+
+const (
+	// LangTC 繁体中文
+	LangTC = "zh-Hant"
+)

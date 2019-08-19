@@ -147,7 +147,7 @@ class BookDetail extends React.Component {
           title={detail && detail.name}
           subTitle={detail && detail.author}
           extra={[
-            <Link className="goBackHome" to={HOME_PATH}>
+            <Link className="goBackHome" key="goBackHome" to={HOME_PATH}>
               <Icon type="home" />
             </Link>
           ]}

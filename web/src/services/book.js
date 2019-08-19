@@ -2,19 +2,34 @@ import axios from "axios";
 import localforage from "localforage";
 
 import { BOOKS_DETAIL, BOOKS_CHAPTERS, BOOKS } from "../urls";
+import { isLangTC, langTC } from "../helpers/util";
 
 const readBookKey = "my-read-book-list";
+
+let defaultChapterLimit = 5;
+if (isLangTC()) {
+  defaultChapterLimit = 3;
+}
 
 // detail 获取书籍详情
 export async function detail(id) {
   const url = BOOKS_DETAIL.replace(":id", id);
-  const { data } = await axios.get(url);
+  const params = {};
+  if (isLangTC()) {
+    params.lang = langTC;
+  }
+  const { data } = await axios.get(url, {
+    params
+  });
   return data;
 }
 
 // listChapters 获取书籍章节列表
 export async function listChapters(id, params) {
   const url = BOOKS_CHAPTERS.replace(":id", id);
+  if (isLangTC()) {
+    params.lang = langTC;
+  }
   const { data } = await axios.get(url, {
     params
   });
@@ -38,6 +53,9 @@ export async function updateByID(id, params) {
 
 // list 获取书籍列表
 export async function list(params) {
+  if (isLangTC()) {
+    params.lang = langTC;
+  }
   const { data } = await axios.get(BOOKS, {
     params
   });
@@ -75,7 +93,7 @@ export async function getChapterContent(bookID, chapterIndex) {
   if (found) {
     return found;
   }
-  const limit = 5;
+  const limit = defaultChapterLimit;
   const offset = Math.floor(chapterIndex / limit) * limit;
   // 失败则从服务器读取
   const data = await listChapters(bookID, {

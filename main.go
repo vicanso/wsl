@@ -16,9 +16,11 @@ package main
 
 import (
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/dustin/go-humanize"
+	warner "github.com/vicanso/count-warner"
 	"github.com/vicanso/elton"
 	bodyparser "github.com/vicanso/elton-body-parser"
 	errorHandler "github.com/vicanso/elton-error-handler"
@@ -28,12 +30,12 @@ import (
 	responder "github.com/vicanso/elton-responder"
 	routerLimiter "github.com/vicanso/elton-router-concurrent-limiter"
 	stats "github.com/vicanso/elton-stats"
-	warner "github.com/vicanso/count-warner"
 
 	"go.uber.org/zap"
 
 	"github.com/vicanso/wsl/config"
 	_ "github.com/vicanso/wsl/controller"
+	"github.com/vicanso/wsl/cs"
 	_ "github.com/vicanso/wsl/helper"
 	"github.com/vicanso/wsl/log"
 	"github.com/vicanso/wsl/middleware"
@@ -99,6 +101,20 @@ func main() {
 		resp.Write([]byte(`{"statusCode": 404,"message": "Not found"}`))
 		warner404.Inc(ip, 1)
 	}
+	tcLang := "/" + cs.LangTC
+	d.Pre(func(req *http.Request) {
+		path := req.URL.Path
+		// 如果url是以繁体前缀，则转换为query
+		if strings.HasPrefix(path, tcLang) {
+			req.URL.Path = path[len(tcLang):]
+			rawQuery := req.URL.RawQuery
+			if rawQuery == "" {
+				req.URL.RawQuery = "lang=" + cs.LangTC
+			} else {
+				req.URL.RawQuery += ("&lang=" + cs.LangTC)
+			}
+		}
+	})
 
 	// 捕捉panic异常，避免程序崩溃
 	d.Use(recover.New())
@@ -124,6 +140,8 @@ func main() {
 			)
 		},
 	}))
+
+	d.Use(middleware.NewS2TConverter())
 
 	// 错误处理，将错误转换为json响应
 	d.Use(errorHandler.NewDefault())

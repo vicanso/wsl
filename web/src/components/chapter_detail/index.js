@@ -155,7 +155,7 @@ class ChapterDetail extends React.Component {
             history.goBack();
           }}
           extra={[
-            <Link className="goBackHome" to={HOME_PATH}>
+            <Link className="goBackHome" key="goBackHome" to={HOME_PATH}>
               <Icon type="home" />
             </Link>
           ]}

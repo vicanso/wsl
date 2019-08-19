@@ -3,12 +3,19 @@ import { Spin, message, Input, Menu, Icon } from "antd";
 import { Link } from "react-router-dom";
 import qs from "querystring";
 
-import { BOOK_DETAIL_PATH, HOME_PATH, BOOK_CHAPTER_PATH } from "../../paths";
+import {
+  BOOK_DETAIL_PATH,
+  HOME_PATH,
+  BOOK_CHAPTER_PATH,
+  SC_HOME_PATH,
+  TC_HOME_PAHT
+} from "../../paths";
 import { formatWordCount, parseQuery, getTimeline } from "../../helpers/util";
 import "./home.sass";
 import * as bookService from "../../services/book";
 import ImageView from "../image_view";
 import "intersection-observer";
+import { isLangTC } from "../../helpers/util";
 
 const Search = Input.Search;
 
@@ -16,6 +23,7 @@ const homeKey = "home";
 const hotKey = "hot";
 const searchKey = "search";
 const recentlyReadKey = "recentlyRead";
+const langToggleKey = "langToggle";
 
 function getOffset(location) {
   const query = parseQuery(location);
@@ -340,6 +348,10 @@ class Home extends React.Component {
   }
   render() {
     const { inited, category } = this.state;
+    let lang = "简体";
+    if (!isLangTC()) {
+      lang = "繁體";
+    }
     return (
       <div className="Home">
         <Menu
@@ -348,6 +360,14 @@ class Home extends React.Component {
           selectedKeys={[category]}
           onClick={e => {
             const { key } = e;
+            if (key === langToggleKey) {
+              if (isLangTC()) {
+                window.location.href = SC_HOME_PATH;
+              } else {
+                window.location.href = TC_HOME_PAHT;
+              }
+              return;
+            }
             const data = {
               category: key,
               sort: ""
@@ -375,6 +395,10 @@ class Home extends React.Component {
           <Menu.Item key={recentlyReadKey}>
             <Icon type="snippets" />
             最近阅读
+          </Menu.Item>
+          <Menu.Item key={langToggleKey}>
+            <Icon type="retweet" />
+            {lang}
           </Menu.Item>
         </Menu>
         {category === searchKey && (

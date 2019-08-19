@@ -5,6 +5,11 @@ import { sha256 } from "./crypto";
 
 const hash = "JT";
 
+// 简体中文
+export const langSC = "zh-Hans";
+// 繁体中文
+export const langTC = "zh-Hant";
+
 export function setBeginOfDay(date) {
   return date
     .clone()
@@ -76,4 +81,13 @@ export function parseQuery(location) {
     return null;
   }
   return qs.parse(location.search.substring(1));
+}
+
+// 判断是否繁体中文
+export function isLangTC() {
+  const arr = window.location.pathname.split("/");
+  if (arr.length < 2) {
+    return false;
+  }
+  return arr[1] === langTC;
 }

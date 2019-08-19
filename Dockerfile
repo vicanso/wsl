@@ -12,6 +12,7 @@ COPY --from=webbuilder /wsl /wsl
 
 RUN apk update \
   && apk add git make \
+  && git clone --depth=1 git@github.com:vicanso/gocc.git /gocc \
   && go get -u github.com/gobuffalo/packr/v2/packr2 \
   && cd /wsl \
   && make build
@@ -26,6 +27,8 @@ RUN addgroup -g 1000 go \
 
 COPY --from=builder /wsl/wsl /usr/local/bin/wsl
 COPY --from=webbuilder /wsl/font /font
+COPY --from=builder /gocc/config /usr/local/share/gocc/config
+COPY --from=builder /gocc/dictionary /usr/local/share/gocc/dictionary
 
 USER go
 

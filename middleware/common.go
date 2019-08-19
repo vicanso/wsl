@@ -15,12 +15,15 @@
 package middleware
 
 import (
+	"bytes"
 	"net/http"
 	"strings"
 	"time"
 
+	"github.com/vicanso/gocc"
 	"github.com/vicanso/elton"
 	"github.com/vicanso/hes"
+	"github.com/vicanso/wsl/cs"
 	"github.com/vicanso/wsl/service"
 )
 
@@ -40,7 +43,37 @@ var (
 		Message:    "captcha is invalid",
 		Category:   errCategory,
 	}
+
+	// 简体转繁体
+	s2tOpenCC *gocc.OpenCC
 )
+
+func init() {
+	openCC, err := gocc.New("s2t")
+	if err != nil {
+		panic(err)
+	}
+	s2tOpenCC = openCC
+}
+
+// NewS2TConverter create a s2t converter
+func NewS2TConverter() elton.Handler {
+
+	return func(c *elton.Context) (err error) {
+		lang := c.QueryParam("lang")
+		err = c.Next()
+		if err != nil {
+			return
+		}
+		if lang == cs.LangTC && c.BodyBuffer != nil && c.BodyBuffer.Len() != 0 {
+			value, _ := s2tOpenCC.Convert(c.BodyBuffer.String())
+			if value != "" {
+				c.BodyBuffer = bytes.NewBufferString(value)
+			}
+		}
+		return
+	}
+}
 
 // NoQuery no query middleware
 func NoQuery(c *elton.Context) (err error) {
