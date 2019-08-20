@@ -121,7 +121,6 @@ func sendFile(c *elton.Context, file string) (err error) {
 }
 
 func (ctrl assetCtrl) index(c *elton.Context) (err error) {
-	c.CacheMaxAge("1m")
 	buf, err := getFileContetAndSetContentType(c, indexFile)
 	if err != nil {
 		return
@@ -135,11 +134,16 @@ func (ctrl assetCtrl) index(c *elton.Context) (err error) {
 	}
 	arr := make([]string, len(books))
 	detailURL := bookDetailURL
+	trimSummary := false
 	if c.QueryParam("lang") == cs.LangTC {
 		detailURL = "/" + cs.LangTC + detailURL
+		trimSummary = true
 	}
 	for index, item := range books {
 		url := fmt.Sprintf(detailURL, item.ID)
+		if trimSummary {
+			item.Summary = ""
+		}
 		html := fmt.Sprintf(`<li><h3><a href="%s">%s</a></h3><p>%s</p></li>`, url, item.Name, item.Summary)
 		arr[index] = html
 	}
@@ -147,12 +151,12 @@ func (ctrl assetCtrl) index(c *elton.Context) (err error) {
 	buf = bytes.Replace(buf, contentPlaceholder, []byte(content), 1)
 	buf = bytes.Replace(buf, titlePlaceHolder, []byte("卫斯理小说"), 1)
 
+	c.CacheMaxAge("10m")
 	c.BodyBuffer = bytes.NewBuffer(buf)
 	return
 }
 
 func (ctrl assetCtrl) bookDetail(c *elton.Context) (err error) {
-	c.CacheMaxAge("1m")
 	buf, err := getFileContetAndSetContentType(c, indexFile)
 	if err != nil {
 		return
@@ -184,12 +188,12 @@ func (ctrl assetCtrl) bookDetail(c *elton.Context) (err error) {
 	buf = bytes.Replace(buf, contentPlaceholder, []byte(html), 1)
 	buf = bytes.Replace(buf, titlePlaceHolder, []byte(book.Name+"-卫斯理小说"), 1)
 
+	c.CacheMaxAge("1m")
 	c.BodyBuffer = bytes.NewBuffer(buf)
 	return
 }
 
 func (ctrl assetCtrl) bookChapterDetail(c *elton.Context) (err error) {
-	c.CacheMaxAge("1m")
 	buf, err := getFileContetAndSetContentType(c, indexFile)
 	if err != nil {
 		return
@@ -219,6 +223,7 @@ func (ctrl assetCtrl) bookChapterDetail(c *elton.Context) (err error) {
 		buf = bytes.Replace(buf, titlePlaceHolder, []byte(chapter.Title+"-"+book.Name+"-卫斯理小说"), 1)
 	}
 
+	c.CacheMaxAge("1m")
 	c.BodyBuffer = bytes.NewBuffer(buf)
 	return
 }

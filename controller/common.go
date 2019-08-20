@@ -20,6 +20,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/vicanso/wsl/cs"
 	"github.com/vicanso/wsl/service"
 	"github.com/vicanso/wsl/util"
 
@@ -117,19 +118,28 @@ func (ctrl commonCtrl) sitemap(c *elton.Context) (err error) {
 		return
 	}
 	homeURL := "https://wsl520.com/"
+	tcHomeURL := homeURL + cs.LangTC + "/"
 	urls := make([]string, 0, 1000)
 	bookURL := homeURL + "book/%d"
+	tcBookURL := tcHomeURL + "book/%d"
 	bookPriority := 0.9
 	bookDetailURL := homeURL + "book/%d/chapter/%d"
+	tcBookDetailURL := tcHomeURL + "book/%d/chapter/%d"
 	bookDetailPriority := 0.63
 	urls = append(urls, fmt.Sprintf(urlTemplate, homeURL, 1.0))
+	urls = append(urls, fmt.Sprintf(urlTemplate, tcHomeURL, 1.0))
 
 	for _, book := range books {
 
 		url := fmt.Sprintf(bookURL, book.ID)
 		urls = append(urls, fmt.Sprintf(urlTemplate, url, bookPriority))
+		url = fmt.Sprintf(tcBookURL, book.ID)
+		urls = append(urls, fmt.Sprintf(urlTemplate, url, bookPriority))
 		for index := 0; index < book.ChapterCount; index++ {
 			url := fmt.Sprintf(bookDetailURL, book.ID, index)
+			urls = append(urls, fmt.Sprintf(urlTemplate, url, bookDetailPriority))
+
+			url = fmt.Sprintf(tcBookDetailURL, book.ID, index)
 			urls = append(urls, fmt.Sprintf(urlTemplate, url, bookDetailPriority))
 		}
 	}
