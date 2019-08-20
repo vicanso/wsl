@@ -8,7 +8,7 @@ const readBookKey = "my-read-book-list";
 
 let defaultChapterLimit = 5;
 if (isLangTC()) {
-  defaultChapterLimit = 3;
+  defaultChapterLimit = 2;
 }
 
 // detail 获取书籍详情
