@@ -232,10 +232,9 @@ class Home extends React.Component {
         ":id",
         item.id
       )}?offset=${offset}`;
-      let cover = null;
-      if (item.cover) {
-        cover = <ImageView url={item.cover} />;
-      }
+      const converUrl =
+        item.cover || "https://bookcover.yuewen.com/qdbimg/1/1/180";
+      const cover = <ImageView url={converUrl} />;
       return (
         <li className="book" key={`${item.id}`}>
           <Link to={url}>
