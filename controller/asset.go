@@ -49,13 +49,13 @@ var (
 const (
 	indexFile          = "index.html"
 	bookDetailURL      = "/book/%d"
-	bookDetailTemplate = `<h3>书名：%s</h3>
-		<p>作者：%s</p>
-		<p>简介：%s</p>
-		<ul>章节：%s</ul>
+	bookDetailTemplate = `<h3>%s</h3>
+		<p>%s</p>
+		<p>%s</p>
+		<ul>%s</ul>
 	`
 	bookChapterURL      = "/book/%d/chapter/%d"
-	bookChapterTemplate = `<h4>章节：%s</h4>
+	bookChapterTemplate = `<h4>%s</h4>
 		<div>%s</div>
 	`
 )
