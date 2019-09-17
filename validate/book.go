@@ -20,7 +20,7 @@ import (
 
 func init() {
 	Add("xBookKeyword", func(i interface{}, _ interface{}) bool {
-		return checkStringLength(i, 1, 10)
+		return checkStringLength(i, 1, 20)
 	})
 
 	Add("xBookHot", func(i interface{}, _ interface{}) bool {
